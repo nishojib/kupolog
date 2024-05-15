@@ -1,0 +1,18 @@
+# ide
+.vscode
+.idea
+
+# local .env files
+.env
+
+# misc
+.air.toml
+.DS_Store
+*.pem
+
+# build
+bin
+tmp
+
+# generated
+vendor
