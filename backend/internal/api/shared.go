@@ -4,11 +4,19 @@ import (
 	"errors"
 )
 
+// Environment represents the environment the application is running in.
 type Environment string
+
+const (
+	// Development environment.
+	EnvDevelopment = "development"
+	// Production environment.
+	EnvProduction = "production"
+)
 
 // NewEnvironment creates a new Environment from a string.
 func NewEnvironment(env string) (Environment, error) {
-	if env != "development" && env != "production" {
+	if env != EnvDevelopment && env != EnvProduction {
 		return "", errors.New("environment must be either development or production")
 	}
 

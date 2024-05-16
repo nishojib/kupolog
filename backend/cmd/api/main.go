@@ -40,6 +40,8 @@ type db struct {
 }
 
 func main() {
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
+
 	if err := godotenv.Load(); err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
@@ -75,8 +77,6 @@ func main() {
 	flag.BoolVar(&cfg.limiter.Enabled, "limiter-enabled", true, "Enable rate limiter")
 
 	flag.Parse()
-
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
 	goth.UseProviders(google.New(cfg.google.key, cfg.google.secret, cfg.google.callback))
 
