@@ -38,3 +38,12 @@ install:
 build/api:
 	@echo 'Building cmd/api...'
 	go build -ldflags='-s -w' -o=/bin/api ./cmd/api
+
+# ==================================================================================== #
+# RUN
+# ==================================================================================== #
+## run/api: run the cmd/api application
+.PHONY: run/api
+run/api:
+	@echo 'Running cmd/api...'
+	go run ./cmd/api
