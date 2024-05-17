@@ -15,7 +15,7 @@ We use [Turso](https://turso.tech/) for our database. Please follow the [guide](
 Use the docker compose command to run locally.
 
 ```zsh
-docker compose up
+docker-compose -f docker-compose.dev.yml up 
 ```
 
 ### Using local environment

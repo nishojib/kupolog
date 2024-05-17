@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - '8080:8080'
     env_file:
@@ -13,7 +13,7 @@ services:
       - backend
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - '3000:3000'
     env_file:
