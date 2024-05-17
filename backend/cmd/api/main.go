@@ -123,7 +123,7 @@ func (cfg *config) initDB() (*sql.DB, error) {
 	defer cancel()
 
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		err := db.Close()
 		return nil, err
 	}
 
