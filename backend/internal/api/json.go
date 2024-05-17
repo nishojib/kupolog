@@ -27,9 +27,8 @@ func WriteJSON[T any](w http.ResponseWriter, status int, data T, headers http.He
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	w.Write(js)
-
-	return nil
+	_, err = w.Write(js)
+	return err
 }
 
 // ReadJSON reads the JSON data from the Request body and unmarshals it into destination.
