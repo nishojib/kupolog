@@ -14,10 +14,14 @@ const (
 	EnvProduction = "production"
 )
 
+var (
+	ErrEnvironment = errors.New("environment must be either development or production")
+)
+
 // NewEnvironment creates a new Environment from a string.
 func NewEnvironment(env string) (Environment, error) {
 	if env != EnvDevelopment && env != EnvProduction {
-		return "", errors.New("environment must be either development or production")
+		return "", ErrEnvironment
 	}
 
 	return Environment(env), nil
