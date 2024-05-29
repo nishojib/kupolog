@@ -1,8 +1,9 @@
 name: publish-to-github-pages
 on:
   push:
-    branches:
-      - master
+    branches: [main]
+    paths:
+      - 'client/**'
 
 permissions:
   contents: read
