@@ -54,6 +54,11 @@ jobs:
       - name: Install dependencies
         working-directory: ./client
         run: npm install
+      - name: Generate environment variables
+        run: |
+          cat << EOF > client/.env.production
+            NEXT_PUBLIC_API_URL=$API_URL
+          EOF
       - name: Build with Next.js
         working-directory: ./client
         run: npm run build
