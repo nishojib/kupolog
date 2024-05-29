@@ -1,9 +1,10 @@
-name: publish-to-github-pages
+name: Deploy to Github Pages
 on:
   push:
     branches: [main]
     paths:
       - 'client/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
