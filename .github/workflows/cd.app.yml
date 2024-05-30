@@ -27,15 +27,11 @@ jobs:
       - name: Install Railway
         run: npm i -g @railway/cli
 
-      - name: Link to railway project
+      - name: Deploy
         working-directory: ./client
-        run: railway link $RAILWAY_PROJECT_ID
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
-          
-      - name: Deploy
-        working-directory: ./client
-        run: railway up
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway service kupolog-app
+          railway up
