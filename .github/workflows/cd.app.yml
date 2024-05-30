@@ -30,6 +30,8 @@ jobs:
       - name: Link to railway project
         working-directory: ./client
         run: railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy
         working-directory: ./client
