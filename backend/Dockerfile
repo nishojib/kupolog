@@ -1,5 +1,5 @@
 ARG GO_VERSION=1
-FROM golang:${GO_VERSION}-bookworm as builder
+FROM golang:${GO_VERSION}-alpine as builder
 
 WORKDIR /usr/src/app
 RUN apk add --no-cache make 
