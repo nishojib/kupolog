@@ -14,7 +14,7 @@ export default async function Home() {
       {/* <Suspense fallback={<p>Loading...</p>}>
         {JSON.stringify(data.data, null, 2)}
       </Suspense> */}
-      Hello World
+      Hello, Kupo!
     </main>
   );
 }
