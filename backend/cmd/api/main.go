@@ -42,13 +42,16 @@ type db struct {
 func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
-	if err := godotenv.Load(); err != nil {
+	envStr := flag.String("env", "development", "Environment")
+	flag.Parse()
+
+	env, err := api.NewEnvironment(*envStr)
+	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
 
-	env, err := api.NewEnvironment(os.Getenv("ENVIRONMENT"))
-	if err != nil {
+	if err := godotenv.Load(); err != nil && env.String() == api.EnvDevelopment {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}

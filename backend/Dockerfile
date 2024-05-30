@@ -13,4 +13,4 @@ RUN make build/api
 FROM debian:bookworm
 
 COPY --from=builder /bin/api /usr/local/bin/
-CMD ["api"]
+CMD ["api", "-env", "production"]
