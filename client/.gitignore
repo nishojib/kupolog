@@ -8,6 +8,7 @@
 pnpm-lock.yaml
 yarn.lock
 package-lock.json
+tmp
 
 # testing
 /coverage
