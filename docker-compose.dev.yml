@@ -8,13 +8,13 @@ services:
     env_file:
       - ./backend/.env
 
-  client:
+  frontend:
     depends_on:
       - backend
     build:
-      context: ./client
+      context: ./frontend
       dockerfile: Dockerfile.dev
     ports:
       - '3000:3000'
     env_file:
-      - ./client/.env
+      - ./frontend/.env

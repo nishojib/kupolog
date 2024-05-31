@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'client/**'
+      - 'frontend/**'
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       - run: flyctl deploy --remote-only --build-arg NEXT_PUBLIC_API_URL=$API_URL
-        working-directory: ./client
+        working-directory: ./frontend
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           API_URL: ${{ vars.API_URL }}
