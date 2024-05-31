@@ -7,9 +7,9 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      Hello, Kupo!
+      <div>Hello, Kupo!</div>
       <Suspense fallback={<p>Loading...</p>}>
-        API Status: 🟢 {health.status}
+        <div>API Status: 🟢 {health.status}</div>
       </Suspense>
     </main>
   );
