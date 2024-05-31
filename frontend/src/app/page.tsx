@@ -1,16 +1,18 @@
-import { Suspense } from 'react';
+import { getHealth } from '@/actions/health';
 
-import { getHealth } from './lib/actions';
-
-export default async function Home() {
+export default async function Page() {
   const health = await getHealth();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div>Hello, Kupo!</div>
-      <Suspense fallback={<p>Loading...</p>}>
-        <div>API Status: 🟢 {health.status}</div>
-      </Suspense>
-    </main>
+    <div className="container">
+      <div className="mt-6 flex flex-col items-center justify-center">
+        <h1 className="text-primary text-4xl font-bold">Hello, Kupo!</h1>
+        <p className="mt-2 flex items-center gap-1 capitalize">
+          <span>status:</span>
+          <span className="text-xs">🟢</span>
+          <span>{health.status}</span>
+        </p>
+      </div>
+    </div>
   );
 }

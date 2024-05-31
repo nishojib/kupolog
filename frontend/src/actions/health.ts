@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 
-import axios from './axios';
+import axios from '@/actions/axios';
 
 const HealthSchema = z.object({
   status: z.literal('available'),
