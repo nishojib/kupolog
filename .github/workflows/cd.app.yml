@@ -17,12 +17,8 @@ jobs:
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - run: echo "API URL is ${{ vars.API_URL }} and $NEXT_PUBLIC_API_URL"
-        env:
-          NEXT_PUBLIC_API_URL: ${{ vars.API_URL }}
-
-      - run: flyctl deploy --remote-only --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+      - run: flyctl deploy --remote-only --build-arg NEXT_PUBLIC_API_URL=$API_URL
         working-directory: ./client
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          NEXT_PUBLIC_API_URL: ${{ vars.API_URL }}
+          API_URL: ${{ vars.API_URL }}
