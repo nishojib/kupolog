@@ -59,40 +59,44 @@ export function TaskCard(props: TaskProps) {
             {task.name}
           </label>
         </div>
-        <CollapsibleTrigger asChild>
-          <Button variant="ghost" size="sm">
-            <CaretSortIcon className="size-4" />
-            <span className="sr-only">Toggle</span>
-          </Button>
-        </CollapsibleTrigger>
+        {task.subtasks?.length && task.subtasks?.length > 0 && (
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <CaretSortIcon className="size-4" />
+              <span className="sr-only">Toggle</span>
+            </Button>
+          </CollapsibleTrigger>
+        )}
       </div>
-      <CollapsibleContent className="space-y-2 border-t py-4 pl-16">
-        {task.subtasks?.map((subtask) => (
-          <div key={subtask.id} className="flex flex-row items-center gap-4">
-            <Checkbox
-              className="rounded-full"
-              id={`subtask-${subtask.id.toString()}`}
-              checked={subtask.completed}
-              onCheckedChange={() => {
-                startTransition(() => {
-                  updateSubtask(task.id, subtask.id);
-                });
-              }}
-            />
-            <label
-              htmlFor={`subtask-${subtask.id.toString()}`}
-              className={cn(
-                'cursor-pointer select-none leading-none tracking-tight',
-                {
-                  'line-through': subtask.completed,
-                },
-              )}
-            >
-              {subtask.name}
-            </label>
-          </div>
-        ))}
-      </CollapsibleContent>
+      {task.subtasks?.length && task.subtasks?.length > 0 && (
+        <CollapsibleContent className="space-y-2 border-t py-4 pl-16">
+          {task.subtasks?.map((subtask) => (
+            <div key={subtask.id} className="flex flex-row items-center gap-4">
+              <Checkbox
+                className="rounded-full"
+                id={`subtask-${subtask.id.toString()}`}
+                checked={subtask.completed}
+                onCheckedChange={() => {
+                  startTransition(() => {
+                    updateSubtask(task.id, subtask.id);
+                  });
+                }}
+              />
+              <label
+                htmlFor={`subtask-${subtask.id.toString()}`}
+                className={cn(
+                  'cursor-pointer select-none leading-none tracking-tight',
+                  {
+                    'line-through': subtask.completed,
+                  },
+                )}
+              >
+                {subtask.name}
+              </label>
+            </div>
+          ))}
+        </CollapsibleContent>
+      )}
     </Collapsible>
   );
 }

@@ -11,7 +11,7 @@ export type Task = {
 type Subtask = {
   id: number;
   name: string;
-  completed?: boolean;
+  completed: boolean;
 };
 
 const tasks: Task[] = [
@@ -44,6 +44,7 @@ const tasks: Task[] = [
       {
         id: 5,
         name: 'Endwalker Hunt Mark',
+        completed: false,
       },
     ],
   },
