@@ -20,6 +20,10 @@ jobs:
         with:
           node-version: 21
 
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci --include=dev
+
       - name: Format code
         working-directory: ./frontend
         run: npm run format
