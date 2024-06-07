@@ -23,6 +23,7 @@ export function TaskCard(props: TaskProps) {
   const { task, updateTask, updateSubtask } = props;
 
   const [isOpen, setIsOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, startTransition] = useTransition();
 
   return (
