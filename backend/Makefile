@@ -47,3 +47,13 @@ build/api:
 run/api:
 	@echo 'Running cmd/api...'
 	go run ./cmd/api
+
+
+# ==================================================================================== #
+# SWAGGER
+# ==================================================================================== #
+## swagger: generate the swagger documentation
+.PHONY: swagger
+swagger:
+	@echo 'Generating swagger documentation...'
+	swag init -g ./cmd/api/main.go

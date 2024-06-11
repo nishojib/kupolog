@@ -11,6 +11,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
+	"github.com/nishojib/ffxivdailies/docs"
+	_ "github.com/nishojib/ffxivdailies/docs"
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/server"
 	"github.com/nishojib/ffxivdailies/internal/vcs"
@@ -39,6 +41,19 @@ type db struct {
 	maxIdleTime  time.Duration
 }
 
+//	@title			Swagger Kupolog API
+//	@version		1.0
+//	@description	This is an API for the Kupolog app.
+//	@termsOfService	https://api.kupolog.com/terms
+
+//	@contact.name	nishojib
+//	@contact.url	https://api.kupolog.com/support
+//	@contact.email	nishojib@kupolog.com
+
+//	@license.name	MIT
+//	@license.url	https://opensource.org/license/mit
+
+// @BasePath	/v1
 func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
@@ -55,6 +70,8 @@ func main() {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
+
+	docs.SwaggerInfo.Host = os.Getenv("API_URL")
 
 	cfg := config{
 		env:  env,
