@@ -6,6 +6,7 @@ RUN apk add --no-cache make
 
 COPY go.mod go.sum ./
 COPY . .
+RUN go install github.com/swaggo/swag/cmd/swag@latest
 RUN make install
 RUN make swagger
 RUN make build/api
