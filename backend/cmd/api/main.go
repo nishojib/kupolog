@@ -12,7 +12,6 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
 	"github.com/nishojib/ffxivdailies/docs"
-	_ "github.com/nishojib/ffxivdailies/docs"
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/server"
 	"github.com/nishojib/ffxivdailies/internal/vcs"
