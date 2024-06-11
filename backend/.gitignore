@@ -8,7 +8,6 @@
 # misc
 .DS_Store
 *.pem
-docs
 
 # build
 bin
