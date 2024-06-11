@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/httprate"
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/server/handlers"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 // NewRoutes returns a new http.Handler that routes requests to the correct handler.
@@ -35,12 +36,14 @@ func NewRoutes(
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	router.Mount("/debug", middleware.Profiler())
-
 	router.NotFound(api.NotFoundResponse)
 	router.MethodNotAllowed(api.MethodNotAllowedResponse)
+	router.Mount("/debug", middleware.Profiler())
 
-	router.Get("/health", handlers.Health(env, version))
+	router.Route("/v1", func(v1Router chi.Router) {
+		v1Router.Mount("/swagger", httpSwagger.WrapHandler)
+		v1Router.Get("/health", handlers.Health(env, version))
+	})
 
 	return router
 }

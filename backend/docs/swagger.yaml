@@ -1,0 +1,53 @@
+basePath: /v1
+definitions:
+  handlers.ServerInfo:
+    properties:
+      environment:
+        type: string
+      version:
+        type: string
+    type: object
+  handlers.ServerStatus:
+    description: Response for the health check
+    properties:
+      status:
+        description: Status is the health status of the service
+        type: string
+      system_info:
+        allOf:
+        - $ref: '#/definitions/handlers.ServerInfo'
+        description: SystemInfo contains information about the system
+    type: object
+  problem.Problem:
+    type: object
+info:
+  contact:
+    email: nishojib@kupolog.com
+    name: nishojib
+    url: https://api.kupolog.com/support
+  description: This is an API for the Kupolog app.
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+  termsOfService: https://api.kupolog.com/terms
+  title: Swagger Kupolog API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      description: Checks the health of the service
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ServerStatus'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/problem.Problem'
+      summary: Health check
+      tags:
+      - health
+swagger: "2.0"

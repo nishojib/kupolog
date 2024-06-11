@@ -7,8 +7,8 @@ RUN apk add --no-cache make
 COPY go.mod go.sum ./
 COPY . .
 RUN make install
+RUN make swagger
 RUN make build/api
-
 
 FROM debian:bookworm
 
