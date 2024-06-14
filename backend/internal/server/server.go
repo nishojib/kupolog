@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/options"
+	"github.com/uptrace/bun"
 )
 
 // Server represents an HTTP server.
@@ -25,16 +25,17 @@ type Server struct {
 
 // New creates a new server with the provided option.Options.
 func New(
-	db *sql.DB,
+	db *bun.DB,
 	limiter api.Limiter,
 	env api.Environment,
 	version string,
+	authSecret string,
 	opts ...options.Option[Server],
 ) *Server {
 	s := &Server{
 		Server: &http.Server{
 			Addr:         ":8080",
-			Handler:      NewRoutes(db, limiter, env, version),
+			Handler:      NewRoutes(db, limiter, env, version, authSecret),
 			IdleTimeout:  1 * time.Minute,
 			ReadTimeout:  5 * time.Second,
 			WriteTimeout: 10 * time.Second,
