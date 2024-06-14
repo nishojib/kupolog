@@ -19,6 +19,8 @@ const config = {
     },
     extend: {
       colors: {
+        google: 'hsl(var(--google))',
+        discord: 'hsl(var(--discord))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

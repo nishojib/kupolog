@@ -2,12 +2,11 @@ import './globals.css';
 
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import { SessionProvider } from 'next-auth/react';
+import { ThemeProvider } from 'next-themes';
+import { Toaster } from 'sonner';
 
-import { ThemeProvider } from '@/components/providers';
-import { SiteFooter } from '@/components/site-footer';
-import { SiteHeader } from '@/components/site-header';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
-import { Toaster } from '@/components/ui/sonner';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 
@@ -80,22 +79,22 @@ export default function RootLayout({
           inter.className,
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div vaul-drawer-wrapper="">
-            <div className="bg-background relative flex min-h-screen flex-col">
-              <SiteHeader />
-              <main className="flex-1">{children}</main>
-              <SiteFooter />
+        <SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div vaul-drawer-wrapper="">
+              <div className="bg-background relative flex min-h-screen flex-col">
+                {children}
+              </div>
             </div>
-          </div>
-          <TailwindIndicator />
-          <Toaster />
-        </ThemeProvider>
+            <TailwindIndicator />
+            <Toaster />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

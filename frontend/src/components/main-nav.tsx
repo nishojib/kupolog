@@ -12,7 +12,7 @@ export function MainNav() {
 
   return (
     <div className="mr-4 hidden md:flex">
-      <Link href="/" className="mr-6 flex items-center space-x-2">
+      <Link href="/" className="mr-6 flex items-center gap-2">
         <Icons.logo className="text-primary size-6 fill-current" />
         <span className="text-primary hidden font-bold sm:inline-block">
           {siteConfig.name}
