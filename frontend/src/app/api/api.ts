@@ -9,17 +9,11 @@
  * ---------------------------------------------------------------
  */
 
-export interface HandlersAddUserInput {
-  /** @example "johndoe@example.com" */
-  email?: string;
-  /** @example "2023-01-01T00:00:00Z" */
-  email_verified?: string;
-  /** @example "https://example.com/image.png" */
-  image?: string;
-  /** @example "John Doe" */
-  name?: string;
-  /** @example "1234567890" */
-  user_id?: string;
+export interface HandlersAccountRequest {
+  access_token?: string;
+  expires_at?: number;
+  provider?: string;
+  provider_account_id?: string;
 }
 
 export interface HandlersServerInfo {
@@ -38,7 +32,6 @@ export interface HandlersServerStatus {
 export interface ModelsUser {
   created_at?: string;
   email?: string;
-  email_verified?: string;
   image?: string;
   name?: string;
   user_id?: string;
@@ -183,11 +176,100 @@ export class HttpClient<SecurityDataType = unknown> {
  * @license MIT (https://opensource.org/license/mit)
  * @termsOfService https://api.kupolog.com/terms
  * @baseUrl /v1
+ * @externalDocs https://swagger.io/resources/open-api/
  * @contact nishojib <nishojib@kupolog.com> (https://api.kupolog.com/support)
  *
  * This is an API for the Kupolog app.
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  auth = {
+    /**
+     * @description takes a google or discord account request verifies the account and returns a token
+     *
+     * @tags auth
+     * @name LoginCreate
+     * @summary login
+     * @request POST:/auth/login
+     */
+    loginCreate: (request: HandlersAccountRequest, params: RequestParams = {}) =>
+      this.request<
+        {
+          token?: {
+            access_token?: string;
+            refresh_token?: string;
+          };
+          user?: ModelsUser;
+        },
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/auth/login`,
+        method: "POST",
+        body: request,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description refreshes the access token for the user
+     *
+     * @tags auth
+     * @name RefreshCreate
+     * @summary refresh token
+     * @request POST:/auth/refresh
+     * @secure
+     */
+    refreshCreate: (params: RequestParams = {}) =>
+      this.request<
+        {
+          access_token?: string;
+        },
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/auth/refresh`,
+        method: "POST",
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description revokes the refresh token for the user
+     *
+     * @tags auth
+     * @name RevokeCreate
+     * @summary revoke token
+     * @request POST:/auth/revoke
+     * @secure
+     */
+    revokeCreate: (params: RequestParams = {}) =>
+      this.request<
+        void,
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/auth/revoke`,
+        method: "POST",
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+  };
   health = {
     /**
      * @description Checks the health of the service
@@ -201,46 +283,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<HandlersServerStatus, ProblemProblem>({
         path: `/health`,
         method: "GET",
-        format: "json",
-        ...params,
-      }),
-  };
-  users = {
-    /**
-     * @description add by json user
-     *
-     * @tags users
-     * @name UsersCreate
-     * @summary Add an user
-     * @request POST:/users
-     */
-    usersCreate: (user: HandlersAddUserInput, params: RequestParams = {}) =>
-      this.request<
-        {
-          user?: ModelsUser;
-        },
-        | {
-            detail?: string;
-            status?: number;
-            title?: string;
-            type?: string;
-          }
-        | {
-            errors?: {
-              email?: string;
-              image?: string;
-              name?: string;
-              user_id?: string;
-            };
-            status?: number;
-            title?: string;
-            type?: string;
-          }
-      >({
-        path: `/users`,
-        method: "POST",
-        body: user,
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),
