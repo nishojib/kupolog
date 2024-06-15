@@ -201,7 +201,7 @@ func RefreshToken(db *bun.DB, authSecret string) http.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Security		Bearer
-//	@Param			Authorization	header		string	true	"Insert your access token"	default(Bearer <Add access token here>)
+//	@Param			Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 //	@Success		200
 //	@Failure		400	{object}	object{detail=string,status=int,title=string,type=string}
 //	@Failure		500	{object}	object{detail=string,status=int,title=string,type=string}

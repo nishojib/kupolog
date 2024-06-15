@@ -37,27 +37,27 @@ type db struct {
 
 // TODO: change this to bearer when PR https://github.com/swaggo/swag/pull/1821 is merged
 
-//	@title			Swagger Kupolog API
-//	@version		1.0
-//	@description	This is an API for the Kupolog app.
-//	@termsOfService	https://api.kupolog.com/terms
-
-//	@contact.name	nishojib
-//	@contact.url	https://api.kupolog.com/support
-//	@contact.email	nishojib@kupolog.com
-
-//	@license.name	MIT
-//	@license.url	https://opensource.org/license/mit
-
-//	@BasePath	/v1
-
+//	@title						Swagger Kupolog API
+//	@version					1.0
+//	@description				This is an API for the Kupolog app.
+//	@termsOfService				https://api.kupolog.com/terms
+//
+//	@contact.name				nishojib
+//	@contact.url				https://api.kupolog.com/support
+//	@contact.email				nishojib@kupolog.com
+//
+//	@license.name				MIT
+//	@license.url				https://opensource.org/license/mit
+//
+//	@BasePath					/v1
+//
 //	@securitydefinitions.apikey	Bearer
 //	@in							header
 //	@name						Authorization
 //	@description				"Type 'Bearer TOKEN' to correctly set the API Key"
 
-//	@externalDocs.description	OpenAPI
-//	@externalDocs.url			https://swagger.io/resources/open-api/
+// @externalDocs.description	OpenAPI
+// @externalDocs.url			https://swagger.io/resources/open-api/
 func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
