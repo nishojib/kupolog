@@ -1,5 +1,6 @@
 ARG GO_VERSION=1
 FROM golang:${GO_VERSION}-alpine as builder
+
 ARG DB_DSN
 ENV DB_DSN=${DB_DSN}
 
@@ -16,6 +17,10 @@ RUN make swagger
 RUN make build/api
 
 FROM debian:bookworm
+
+RUN apt-get update && apt-get install -y \
+  ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /bin/api /usr/local/bin/
 CMD ["api", "-env", "production"]
