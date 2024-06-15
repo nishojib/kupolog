@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/nishojib/ffxivdailies/internal/data/models"
@@ -29,7 +30,18 @@ func (ur *UserRepository) InsertAndLinkAccount(user *models.User, account *model
 		func(ctx context.Context, tx bun.Tx) error {
 			_, err := tx.NewInsert().Model(user).Exec(ctx)
 			if err != nil {
-				return err
+				// If the error is a unique constraint error, try to fetch the user by email
+				if strings.Contains(
+					err.Error(),
+					"SQLite error: UNIQUE constraint failed: users.email",
+				) {
+					err = tx.NewSelect().Model(user).Where("email = ?", user.Email).Scan(ctx)
+					if err != nil {
+						return err
+					}
+				} else {
+					return err
+				}
 			}
 
 			account.UserID = user.ID

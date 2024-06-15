@@ -93,10 +93,10 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 					api.ServerErrorResponse(w, r, err)
 					return
 				}
-
+			} else {
+				api.ServerErrorResponse(w, r, err)
+				return
 			}
-			api.ServerErrorResponse(w, r, err)
-			return
 		}
 
 		tokenExpiresIn := time.Hour * 1

@@ -7,5 +7,5 @@ var (
 	ErrEditConflict       = errors.New("edit conflict")
 	ErrContextMissingUser = errors.New("context missing user")
 	ErrServer             = errors.New("server error")
-	ErrDuplicateName      = errors.New("duplicate name")
+	ErrDuplicateEmail     = errors.New("duplicate email")
 )
