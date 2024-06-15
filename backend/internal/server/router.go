@@ -44,7 +44,6 @@ func NewRoutes(
 	router.Route("/v1", func(v1Router chi.Router) {
 		v1Router.Mount("/swagger", httpSwagger.WrapHandler)
 		v1Router.Get("/health", handlers.Health(env, version))
-		v1Router.Post("/users", handlers.AddUser(db))
 		v1Router.Post("/auth/login", handlers.Login(db, authSecret))
 		v1Router.Post("/auth/refresh", handlers.RefreshToken(db, authSecret))
 		v1Router.Post("/auth/revoke", handlers.RevokeToken(db))

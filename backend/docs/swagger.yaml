@@ -11,21 +11,6 @@ definitions:
       provider_account_id:
         type: string
     type: object
-  handlers.AddUserInput:
-    properties:
-      email:
-        example: johndoe@example.com
-        type: string
-      image:
-        example: https://example.com/image.png
-        type: string
-      name:
-        example: John Doe
-        type: string
-      user_id:
-        example: "1234567890"
-        type: string
-    type: object
   handlers.ServerInfo:
     properties:
       environment:
@@ -278,79 +263,6 @@ paths:
       summary: Health check
       tags:
       - health
-  /users:
-    post:
-      consumes:
-      - application/json
-      description: add by json user
-      parameters:
-      - description: Add user
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.AddUserInput'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            properties:
-              user:
-                $ref: '#/definitions/models.User'
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-        "422":
-          description: Unprocessable Entity
-          schema:
-            properties:
-              errors:
-                properties:
-                  email:
-                    type: string
-                  image:
-                    type: string
-                  name:
-                    type: string
-                  user_id:
-                    type: string
-                type: object
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-      summary: Add an user
-      tags:
-      - users
 securityDefinitions:
   Bearer:
     description: '"Type ''Bearer TOKEN'' to correctly set the API Key"'
