@@ -5,10 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
 	"github.com/nishojib/ffxivdailies/internal/data/models"
+
 	"github.com/uptrace/bun"
 )
 
@@ -21,8 +23,20 @@ func NewUserRepository(db *bun.DB) *UserRepository {
 }
 
 func (ur *UserRepository) InsertAndLinkAccount(user *models.User, account *models.Account) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	slog.Info(
+		"inserting user",
+		"user_id",
+		user.ID,
+		"name",
+		user.Name,
+		"email",
+		user.Email,
+		"image",
+		user.Image,
+	)
 
 	err := ur.db.RunInTx(
 		ctx,
@@ -30,16 +44,21 @@ func (ur *UserRepository) InsertAndLinkAccount(user *models.User, account *model
 		func(ctx context.Context, tx bun.Tx) error {
 			_, err := tx.NewInsert().Model(user).Exec(ctx)
 			if err != nil {
+				slog.Info("failed to insert user", "error", err)
+
 				// If the error is a unique constraint error, try to fetch the user by email
 				if strings.Contains(
 					err.Error(),
 					"SQLite error: UNIQUE constraint failed: users.email",
 				) {
+					slog.Info("failed to insert user, trying to fetch user by email")
 					err = tx.NewSelect().Model(user).Where("email = ?", user.Email).Scan(ctx)
 					if err != nil {
+						slog.Info("failed to fetch user by email", "error", err)
 						return err
 					}
 				} else {
+					slog.Info("failed to insert user, error", err)
 					return err
 				}
 			}
