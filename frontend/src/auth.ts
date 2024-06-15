@@ -96,6 +96,7 @@ const authOptions = {
   },
   secret: process.env.AUTH_SECRET,
   providers: [Google({}), Discord({})],
+  trustHost: true,
 } satisfies NextAuthConfig;
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);
