@@ -9,7 +9,12 @@ import (
 
 func ValidateGoogle(token string) (string, bool, error) {
 	url := "https://oauth2.googleapis.com/tokeninfo?access_token=" + token
-	resp, err := http.Get(url)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return "", false, err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		slog.Error("failed to get token info for google", "error", err)
 		return "", false, err
