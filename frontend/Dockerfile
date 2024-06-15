@@ -44,6 +44,8 @@ RUN pnpm prune --prod
 # Final stage for app image
 FROM base
 
+ARG AUTH_URL
+ENV AUTH_URL=${AUTH_URL}
 ARG AUTH_SECRET
 ENV AUTH_SECRET=${AUTH_SECRET}
 ARG AUTH_GOOGLE_ID 
