@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/nishojib/ffxivdailies/internal/data/models"
 	"github.com/nishojib/ffxivdailies/internal/data/repository"
 	"github.com/nrednav/cuid2"
+
 	"github.com/uptrace/bun"
 )
 
@@ -49,6 +51,18 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 			return
 		}
 
+		slog.Info(
+			"login",
+			"access_token",
+			a.AccessToken,
+			"expires_at",
+			a.ExpiresAt,
+			"provider",
+			a.Provider,
+			"provider_account_id",
+			a.ProviderAccountID,
+		)
+
 		// verify the access token
 		var email string
 		var isAuthorized bool
@@ -59,13 +73,17 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 				api.InvalidAccessTokenResponse(w, r)
 				return
 			}
+			slog.Info("GOOGLE VALIDATED")
 		} else if a.Provider == "discord" {
 			email, isAuthorized, err = auth.ValidateDiscord(a.AccessToken)
 			if err != nil {
 				api.InvalidAccessTokenResponse(w, r)
 				return
 			}
+			slog.Info("DISCORD VALIDATED")
 		}
+
+		slog.Info("login", "email", email, "isAuthorized", isAuthorized)
 
 		if !isAuthorized {
 			api.InvalidAccessTokenResponse(w, r)
