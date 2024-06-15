@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log/slog"
 	"strings"
 	"time"
 
@@ -32,21 +31,16 @@ func (ur *UserRepository) InsertAndLinkAccount(user *models.User, account *model
 		func(ctx context.Context, tx bun.Tx) error {
 			_, err := tx.NewInsert().Model(user).Exec(ctx)
 			if err != nil {
-				slog.Info("failed to insert user", "error", err)
-
 				// If the error is a unique constraint error, try to fetch the user by email
 				if strings.Contains(
 					err.Error(),
 					"SQLite error: UNIQUE constraint failed: users.email",
 				) {
-					slog.Info("failed to insert user, trying to fetch user by email")
 					err = tx.NewSelect().Model(user).Where("email = ?", user.Email).Scan(ctx)
 					if err != nil {
-						slog.Info("failed to fetch user by email", "error", err)
 						return err
 					}
 				} else {
-					slog.Info("failed to insert user, error", err)
 					return err
 				}
 			}

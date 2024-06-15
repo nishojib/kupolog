@@ -3,7 +3,6 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"time"
 
@@ -51,18 +50,6 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 			return
 		}
 
-		slog.Info(
-			"login",
-			"access_token",
-			a.AccessToken,
-			"expires_at",
-			a.ExpiresAt,
-			"provider",
-			a.Provider,
-			"provider_account_id",
-			a.ProviderAccountID,
-		)
-
 		// verify the access token
 		var email string
 		var isAuthorized bool
@@ -73,17 +60,13 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 				api.InvalidAccessTokenResponse(w, r)
 				return
 			}
-			slog.Info("GOOGLE VALIDATED")
 		} else if a.Provider == "discord" {
 			email, isAuthorized, err = auth.ValidateDiscord(a.AccessToken)
 			if err != nil {
 				api.InvalidAccessTokenResponse(w, r)
 				return
 			}
-			slog.Info("DISCORD VALIDATED")
 		}
-
-		slog.Info("login", "email", email, "isAuthorized", isAuthorized)
 
 		if !isAuthorized {
 			api.InvalidAccessTokenResponse(w, r)
@@ -92,8 +75,6 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 
 		user, err := repository.NewUserRepository(db).GetByProviderID(a.ProviderAccountID)
 		if err != nil {
-			slog.Info("failed to get user", "error", err)
-
 			if errors.Is(err, repository.ErrRecordNotFound) {
 				user = models.User{
 					Name:   "Warrior of Light",
@@ -110,20 +91,14 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 
 				err = repository.NewUserRepository(db).InsertAndLinkAccount(&user, &account)
 				if err != nil {
-					slog.Info("failed to insert user", "error", err)
-
 					api.ServerErrorResponse(w, r, err)
 					return
 				}
 			} else {
-				slog.Info("failed to get user", "error", err)
-
 				api.ServerErrorResponse(w, r, err)
 				return
 			}
 		}
-
-		// slog.Info("login", "GOT USER", user)
 
 		tokenExpiresIn := time.Hour * 1
 		accessToken, err := auth.New(auth.TokenTypeAccess, user.UserID, authSecret, tokenExpiresIn)
