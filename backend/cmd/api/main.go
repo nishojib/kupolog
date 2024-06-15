@@ -35,6 +35,8 @@ type db struct {
 	maxIdleTime  time.Duration
 }
 
+// TODO: change this to bearer when PR https://github.com/swaggo/swag/pull/1821 is merged
+
 //	@title			Swagger Kupolog API
 //	@version		1.0
 //	@description	This is an API for the Kupolog app.
@@ -47,7 +49,15 @@ type db struct {
 //	@license.name	MIT
 //	@license.url	https://opensource.org/license/mit
 
-// @BasePath	/v1
+//	@BasePath	/v1
+
+//	@securitydefinitions.apikey	Bearer
+//	@in							header
+//	@name						Authorization
+//	@description				"Type 'Bearer TOKEN' to correctly set the API Key"
+
+//	@externalDocs.description	OpenAPI
+//	@externalDocs.url			https://swagger.io/resources/open-api/
 func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 

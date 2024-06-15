@@ -1,5 +1,16 @@
 basePath: /v1
 definitions:
+  handlers.AccountRequest:
+    properties:
+      access_token:
+        type: string
+      expires_at:
+        type: integer
+      provider:
+        type: string
+      provider_account_id:
+        type: string
+    type: object
   handlers.AddUserInput:
     properties:
       email:
@@ -48,6 +59,9 @@ definitions:
     type: object
   problem.Problem:
     type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
 info:
   contact:
     email: nishojib@kupolog.com
@@ -61,6 +75,192 @@ info:
   title: Swagger Kupolog API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: takes a google or discord account request verifies the account
+        and returns a token
+      parameters:
+      - description: account request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              token:
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                type: object
+              user:
+                $ref: '#/definitions/models.User'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: login
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: refreshes the access token for the user
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              access_token:
+                type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: refresh token
+      tags:
+      - auth
+  /auth/revoke:
+    post:
+      consumes:
+      - application/json
+      description: revokes the refresh token for the user
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      security:
+      - Bearer: []
+      summary: revoke token
+      tags:
+      - auth
   /health:
     get:
       description: Checks the health of the service
@@ -151,4 +351,10 @@ paths:
       summary: Add an user
       tags:
       - users
+securityDefinitions:
+  Bearer:
+    description: '"Type ''Bearer TOKEN'' to correctly set the API Key"'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

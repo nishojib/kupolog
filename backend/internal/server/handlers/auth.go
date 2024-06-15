@@ -10,22 +10,35 @@ import (
 	"github.com/nishojib/ffxivdailies/internal/auth"
 	"github.com/nishojib/ffxivdailies/internal/data/models"
 	"github.com/nishojib/ffxivdailies/internal/data/repository"
-	"github.com/nishojib/ffxivdailies/internal/validator"
 	"github.com/nrednav/cuid2"
 	"github.com/uptrace/bun"
 )
 
-type AccountInput struct {
+// AccountRequest represents the request body for the login endpoint.
+type AccountRequest struct {
 	AccessToken       string `json:"access_token"`
 	ExpiresAt         int    `json:"expires_at"`
 	Provider          string `json:"provider"`
 	ProviderAccountID string `json:"provider_account_id"`
 }
 
+// Login godoc
+//
+//	@Summary		login
+//	@Description	takes a google or discord account request verifies the account and returns a token
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		AccountRequest	true	"account request"
+//	@Success		200		{object}	object{user=models.User,token=object{access_token=string,refresh_token=string}}
+//	@Failure		400		{object}	object{detail=string,status=int,title=string,type=string}
+//	@Failure		401		{object}	object{detail=string,status=int,title=string,type=string}
+//	@Failure		500		{object}	object{detail=string,status=int,title=string,type=string}
+//	@Router			/auth/login [post]
 func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// get the account info
-		var a AccountInput
+		var a AccountRequest
 		if err := api.ReadJSON(w, r, &a); err != nil {
 			api.BadRequestResponse(w, r, err)
 			return
@@ -69,21 +82,10 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 					UserID: cuid2.Generate(),
 				}
 
-				v := validator.New()
-				if user.Validate(v); !v.Valid() {
-					api.FailedValidationResponse(w, r, v.Errors)
-					return
-				}
-
 				account := models.Account{
 					Provider:          a.Provider,
 					ProviderAccountID: a.ProviderAccountID,
 					Email:             email,
-				}
-
-				if account.Validate(v); !v.Valid() {
-					api.FailedValidationResponse(w, r, v.Errors)
-					return
 				}
 
 				err = repository.NewUserRepository(db).InsertAndLinkAccount(&user, &account)
@@ -140,6 +142,20 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 	}
 }
 
+// RefreshToken godoc
+//
+//	@Summary		refresh token
+//	@Description	refreshes the access token for the user
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Security		Bearer
+//	@Param			Authorization	header		string	true	"Insert your access token"	default(Bearer <Add access token here>)
+//	@Success		200				{object}	object{access_token=string}
+//	@Failure		400				{object}	object{detail=string,status=int,title=string,type=string}
+//	@Failure		401				{object}	object{detail=string,status=int,title=string,type=string}
+//	@Failure		500				{object}	object{detail=string,status=int,title=string,type=string}
+//	@Router			/auth/refresh [post]
 func RefreshToken(db *bun.DB, authSecret string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		refreshToken, err := auth.GetBearerToken(r.Header)
@@ -164,7 +180,12 @@ func RefreshToken(db *bun.DB, authSecret string) http.HandlerFunc {
 			return
 		}
 
-		err = api.WriteJSON(w, http.StatusOK, api.Envelope[string]{"token": accessToken}, nil)
+		err = api.WriteJSON(
+			w,
+			http.StatusOK,
+			api.Envelope[string]{"access_token": accessToken},
+			nil,
+		)
 		if err != nil {
 			api.ServerErrorResponse(w, r, err)
 			return
@@ -172,6 +193,19 @@ func RefreshToken(db *bun.DB, authSecret string) http.HandlerFunc {
 	}
 }
 
+// RevokeToken godoc
+//
+//	@Summary		revoke token
+//	@Description	revokes the refresh token for the user
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Security		Bearer
+//	@Param			Authorization	header		string	true	"Insert your access token"	default(Bearer <Add access token here>)
+//	@Success		200
+//	@Failure		400	{object}	object{detail=string,status=int,title=string,type=string}
+//	@Failure		500	{object}	object{detail=string,status=int,title=string,type=string}
+//	@Router			/auth/revoke [post]
 func RevokeToken(db *bun.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		refreshToken, err := auth.GetBearerToken(r.Header)
