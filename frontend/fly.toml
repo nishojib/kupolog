@@ -9,6 +9,8 @@ primary_region = 'yul'
 [build]
 
 [http_service]
+handlers = ["http"]
+port = 80
 internal_port = 3000
 force_https = true
 auto_stop_machines = true
