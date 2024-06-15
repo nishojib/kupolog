@@ -92,7 +92,7 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 
 		user, err := repository.NewUserRepository(db).GetByProviderID(a.ProviderAccountID)
 		if err != nil {
-			slog.Error("failed to get user", "error", err)
+			slog.Info("failed to get user", "error", err)
 
 			if errors.Is(err, repository.ErrRecordNotFound) {
 				user = models.User{
@@ -110,13 +110,13 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 
 				err = repository.NewUserRepository(db).InsertAndLinkAccount(&user, &account)
 				if err != nil {
-					slog.Error("failed to insert user", "error", err)
+					slog.Info("failed to insert user", "error", err)
 
 					api.ServerErrorResponse(w, r, err)
 					return
 				}
 			} else {
-				slog.Error("failed to get user", "error", err)
+				slog.Info("failed to get user", "error", err)
 
 				api.ServerErrorResponse(w, r, err)
 				return
