@@ -90,40 +90,47 @@ func Login(db *bun.DB, authSecret string) http.HandlerFunc {
 			return
 		}
 
-		user, err := repository.NewUserRepository(db).GetByProviderID(a.ProviderAccountID)
-		if err != nil {
-			slog.Info("failed to get user", "error", err)
-
-			if errors.Is(err, repository.ErrRecordNotFound) {
-				user = models.User{
-					Name:   "Warrior of Light",
-					Email:  email,
-					Image:  "https://example.com/image.png",
-					UserID: cuid2.Generate(),
-				}
-
-				account := models.Account{
-					Provider:          a.Provider,
-					ProviderAccountID: a.ProviderAccountID,
-					Email:             email,
-				}
-
-				err = repository.NewUserRepository(db).InsertAndLinkAccount(&user, &account)
-				if err != nil {
-					slog.Info("failed to insert user", "error", err)
-
-					api.ServerErrorResponse(w, r, err)
-					return
-				}
-			} else {
-				slog.Info("failed to get user", "error", err)
-
-				api.ServerErrorResponse(w, r, err)
-				return
-			}
+		user := models.User{
+			Name:   "Warrior of Light",
+			Email:  email,
+			Image:  "https://example.com/image.png",
+			UserID: cuid2.Generate(),
 		}
 
-		slog.Info("login", "GOT USER", user)
+		// user, err := repository.NewUserRepository(db).GetByProviderID(a.ProviderAccountID)
+		// if err != nil {
+		// 	slog.Info("failed to get user", "error", err)
+
+		// 	if errors.Is(err, repository.ErrRecordNotFound) {
+		// 		user = models.User{
+		// 			Name:   "Warrior of Light",
+		// 			Email:  email,
+		// 			Image:  "https://example.com/image.png",
+		// 			UserID: cuid2.Generate(),
+		// 		}
+
+		// 		account := models.Account{
+		// 			Provider:          a.Provider,
+		// 			ProviderAccountID: a.ProviderAccountID,
+		// 			Email:             email,
+		// 		}
+
+		// 		err = repository.NewUserRepository(db).InsertAndLinkAccount(&user, &account)
+		// 		if err != nil {
+		// 			slog.Info("failed to insert user", "error", err)
+
+		// 			api.ServerErrorResponse(w, r, err)
+		// 			return
+		// 		}
+		// 	} else {
+		// 		slog.Info("failed to get user", "error", err)
+
+		// 		api.ServerErrorResponse(w, r, err)
+		// 		return
+		// 	}
+		// }
+
+		// slog.Info("login", "GOT USER", user)
 
 		tokenExpiresIn := time.Hour * 1
 		accessToken, err := auth.New(auth.TokenTypeAccess, user.UserID, authSecret, tokenExpiresIn)
