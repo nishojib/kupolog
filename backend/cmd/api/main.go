@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/nishojib/ffxivdailies/docs"
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/server"
@@ -70,10 +69,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := godotenv.Load(); err != nil && env.String() == api.EnvDevelopment {
-		slog.Error(err.Error())
-		os.Exit(1)
-	}
+	// if err := godotenv.Load(); err != nil && env.String() == api.EnvDevelopment {
+	// 	slog.Error(err.Error())
+	// 	os.Exit(1)
+	// }
 
 	docs.SwaggerInfo.Host = os.Getenv("API_URL")
 

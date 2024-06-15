@@ -23,4 +23,4 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /bin/api /usr/local/bin/
-CMD ["api", "-env", "production"]
+CMD ["api", "-env", "development"]
