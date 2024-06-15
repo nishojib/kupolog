@@ -1,9 +1,6 @@
 ARG GO_VERSION=1
 FROM golang:${GO_VERSION}-alpine as builder
 
-ARG DB_DSN
-ENV DB_DSN=${DB_DSN}
-
 WORKDIR /usr/src/app
 RUN apk add --no-cache make 
 
@@ -17,6 +14,13 @@ RUN make swagger
 RUN make build/api
 
 FROM debian:bookworm
+
+ARG DB_DSN
+ENV DB_DSN=${DB_DSN}
+ARG API_URL
+ENV API_URL=${API_URL}
+ARG AUTH_SECRET
+ENV AUTH_SECRET=${AUTH_SECRET}
 
 RUN apt-get update && apt-get install -y \
   ca-certificates \

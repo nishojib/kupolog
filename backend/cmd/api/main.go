@@ -6,6 +6,7 @@ import (
 	"flag"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/nishojib/ffxivdailies/docs"
@@ -126,7 +127,8 @@ func (cfg *config) run() error {
 }
 
 func (cfg *config) initDB() (*bun.DB, error) {
-	slog.Info("connecting to db...")
+	dsn := strings.Split(os.Getenv("DB_DSN"), "?")[0]
+	slog.Info("connecting to db...", "dsn", dsn)
 
 	sqldb, err := sql.Open("libsql", cfg.db.dsn)
 	if err != nil {

@@ -26,18 +26,6 @@ func (ur *UserRepository) InsertAndLinkAccount(user *models.User, account *model
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	slog.Info(
-		"inserting user",
-		"user_id",
-		user.ID,
-		"name",
-		user.Name,
-		"email",
-		user.Email,
-		"image",
-		user.Image,
-	)
-
 	err := ur.db.RunInTx(
 		ctx,
 		&sql.TxOptions{},
