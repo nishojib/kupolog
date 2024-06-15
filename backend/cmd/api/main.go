@@ -9,28 +9,23 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/providers/google"
 	"github.com/nishojib/ffxivdailies/docs"
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/server"
 	"github.com/nishojib/ffxivdailies/internal/vcs"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/sqlitedialect"
+	"github.com/uptrace/bun/extra/bundebug"
 )
 
 type config struct {
-	port    string
-	db      db
-	google  provider
-	env     api.Environment
-	limiter api.Limiter
-	version string
-}
-
-type provider struct {
-	key      string
-	secret   string
-	callback string
+	port       string
+	db         db
+	env        api.Environment
+	limiter    api.Limiter
+	version    string
+	authSecret string
 }
 
 type db struct {
@@ -40,19 +35,29 @@ type db struct {
 	maxIdleTime  time.Duration
 }
 
-//	@title			Swagger Kupolog API
-//	@version		1.0
-//	@description	This is an API for the Kupolog app.
-//	@termsOfService	https://api.kupolog.com/terms
+// TODO: change this to bearer when PR https://github.com/swaggo/swag/pull/1821 is merged
 
-//	@contact.name	nishojib
-//	@contact.url	https://api.kupolog.com/support
-//	@contact.email	nishojib@kupolog.com
+//	@title						Swagger Kupolog API
+//	@version					1.0
+//	@description				This is an API for the Kupolog app.
+//	@termsOfService				https://api.kupolog.com/terms
+//
+//	@contact.name				nishojib
+//	@contact.url				https://api.kupolog.com/support
+//	@contact.email				nishojib@kupolog.com
+//
+//	@license.name				MIT
+//	@license.url				https://opensource.org/license/mit
+//
+//	@BasePath					/v1
+//
+//	@securitydefinitions.apikey	Bearer
+//	@in							header
+//	@name						Authorization
+//	@description				"Type 'Bearer TOKEN' to correctly set the API Key"
 
-//	@license.name	MIT
-//	@license.url	https://opensource.org/license/mit
-
-// @BasePath	/v1
+// @externalDocs.description	OpenAPI
+// @externalDocs.url			https://swagger.io/resources/open-api/
 func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
@@ -73,15 +78,11 @@ func main() {
 	docs.SwaggerInfo.Host = os.Getenv("API_URL")
 
 	cfg := config{
-		env:  env,
-		port: os.Getenv("PORT"),
-		db:   db{dsn: os.Getenv("DB_DSN")},
-		google: provider{
-			key:      os.Getenv("GOOGLE_KEY"),
-			secret:   os.Getenv("GOOGLE_SECRET"),
-			callback: os.Getenv("GOOGLE_CALLBACK_URL"),
-		},
-		version: vcs.Version(),
+		env:        env,
+		port:       os.Getenv("PORT"),
+		db:         db{dsn: os.Getenv("DB_DSN")},
+		version:    vcs.Version(),
+		authSecret: os.Getenv("AUTH_SECRET"),
 	}
 
 	flag.IntVar(&cfg.db.maxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")
@@ -96,8 +97,6 @@ func main() {
 	flag.BoolVar(&cfg.limiter.Enabled, "limiter-enabled", true, "Enable rate limiter")
 
 	flag.Parse()
-
-	goth.UseProviders(google.New(cfg.google.key, cfg.google.secret, cfg.google.callback))
 
 	if err := cfg.run(); err != nil {
 		slog.Error(err.Error())
@@ -116,6 +115,7 @@ func (cfg *config) run() error {
 		cfg.limiter,
 		cfg.env,
 		cfg.version,
+		cfg.authSecret,
 		server.WithPort(cfg.port),
 	)
 
@@ -126,27 +126,32 @@ func (cfg *config) run() error {
 	return nil
 }
 
-func (cfg *config) initDB() (*sql.DB, error) {
+func (cfg *config) initDB() (*bun.DB, error) {
 	slog.Info("connecting to db...")
 
-	db, err := sql.Open("libsql", cfg.db.dsn)
+	sqldb, err := sql.Open("libsql", cfg.db.dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	db.SetMaxOpenConns(cfg.db.maxOpenConns)
-	db.SetMaxIdleConns(cfg.db.maxIdleConns)
-	db.SetConnMaxIdleTime(cfg.db.maxIdleTime)
+	sqldb.SetMaxOpenConns(cfg.db.maxOpenConns)
+	sqldb.SetMaxIdleConns(cfg.db.maxIdleConns)
+	sqldb.SetConnMaxIdleTime(cfg.db.maxIdleTime)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := db.PingContext(ctx); err != nil {
-		err := db.Close()
+	if err := sqldb.PingContext(ctx); err != nil {
+		err := sqldb.Close()
 		return nil, err
 	}
 
 	slog.Info("connected to db...")
+
+	db := bun.NewDB(sqldb, sqlitedialect.New())
+	if cfg.env == api.EnvDevelopment {
+		db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
+	}
 
 	return db, nil
 }

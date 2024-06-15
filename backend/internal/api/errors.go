@@ -67,8 +67,8 @@ func RateLimitExceededResponse(w http.ResponseWriter, r *http.Request) {
 }
 
 // InvalidCredentialsResponse sends a 401 Unauthorized response.
-func InvalidCredentialsResponse(w http.ResponseWriter, r *http.Request) {
-	message := "invalid authentication credentials"
+func InvalidAccessTokenResponse(w http.ResponseWriter, r *http.Request) {
+	message := "invalid access token"
 	problem := problem.Of(http.StatusUnauthorized).Append(problem.WithDetail(message))
 	errorResponse(w, r, problem)
 }

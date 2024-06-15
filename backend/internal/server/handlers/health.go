@@ -8,7 +8,7 @@ import (
 
 // ServerStatus Response for the health check
 //
-//	@Description Response for the health check
+//	@Description	Response for the health check
 type ServerStatus struct {
 	// Status is the health status of the service
 	Status string `json:"status"`
@@ -21,13 +21,13 @@ type ServerInfo struct {
 	Version     string `json:"version"`
 }
 
-// Health
+// Health godoc
 //
 //	@Summary		Health check
 //	@Description	Checks the health of the service
 //	@Tags			health
 //	@Produce		json
-//	@Success		200	{object} 	ServerStatus
+//	@Success		200	{object}	ServerStatus
 //	@Failure		500	{object}	problem.Problem
 //	@Router			/health [get]
 func Health(env api.Environment, version string) http.HandlerFunc {

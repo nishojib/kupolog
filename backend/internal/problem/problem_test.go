@@ -48,7 +48,7 @@ func TestProblem(t *testing.T) {
 	assert.JSONEq(
 		t,
 		str,
-		`{"status":202, "title":"Accepted", "type":"https://tools.ietf.org/html/rfc7231#section-6.3.3"}`,
+		`{"status":202, "title":"Accepted", "type":"https://tools.ietf.org/html/rfc9110#section-15.3.3"}`,
 	)
 
 }

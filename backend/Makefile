@@ -1,3 +1,5 @@
+include .env
+
 # ==================================================================================== #
 # QUALITY CONTROL
 # ==================================================================================== #
@@ -57,3 +59,21 @@ run/api:
 swagger:
 	@echo 'Generating swagger documentation...'
 	swag init -g ./cmd/api/main.go
+
+# ==================================================================================== #
+# DATABASE
+# ==================================================================================== #
+## db/create: create a new database migration
+.PHONY: db/create
+db/create:
+	goose -s -dir="migrations" create ${name} sql
+
+## db/up: migrate the database
+.PHONY: db/up
+db/up:
+	goose -dir="migrations" turso ${DB_DSN} up
+
+## db/down: rollback the database
+.PHONY: db/down
+db/down:
+	goose -dir="migrations" turso ${DB_DSN} down

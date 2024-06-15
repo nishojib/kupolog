@@ -1,7 +1,6 @@
 package server
 
 import (
-	"database/sql"
 	"net/http"
 	"time"
 
@@ -12,14 +11,16 @@ import (
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/server/handlers"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"github.com/uptrace/bun"
 )
 
 // NewRoutes returns a new http.Handler that routes requests to the correct handler.
 func NewRoutes(
-	db *sql.DB,
+	db *bun.DB,
 	limiter api.Limiter,
 	env api.Environment,
 	version string,
+	authSecret string,
 ) http.Handler {
 	router := chi.NewRouter()
 
@@ -43,6 +44,9 @@ func NewRoutes(
 	router.Route("/v1", func(v1Router chi.Router) {
 		v1Router.Mount("/swagger", httpSwagger.WrapHandler)
 		v1Router.Get("/health", handlers.Health(env, version))
+		v1Router.Post("/auth/login", handlers.Login(db, authSecret))
+		v1Router.Post("/auth/refresh", handlers.RefreshToken(db, authSecret))
+		v1Router.Post("/auth/revoke", handlers.RevokeToken(db))
 	})
 
 	return router
