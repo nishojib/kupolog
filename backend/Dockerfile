@@ -1,6 +1,9 @@
 ARG GO_VERSION=1
 FROM golang:${GO_VERSION}-alpine as builder
 
+ARG DB_DSN
+ENV DB_DSN=${DB_DSN}
+
 WORKDIR /usr/src/app
 RUN apk add --no-cache make 
 
