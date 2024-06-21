@@ -5,7 +5,7 @@ export type Task = {
   name: string;
   completed: boolean;
   type: 'weekly' | 'daily';
-  subtasks?: Subtask[];
+  content?: Subtask[] | Record<string, string> | string;
 };
 
 type Subtask = {
@@ -17,10 +17,16 @@ type Subtask = {
 const tasks: Task[] = [
   {
     id: 1,
+    name: 'Weekly repeatable quests',
+    completed: false,
+    type: 'weekly',
+  },
+  {
+    id: 2,
     name: 'Weekly Hunt Marks',
     completed: false,
     type: 'weekly',
-    subtasks: [
+    content: [
       {
         id: 1,
         name: 'ARR Hunt Marks',
@@ -49,40 +55,306 @@ const tasks: Task[] = [
     ],
   },
   {
-    id: 2,
-    name: 'Challenge Log',
-    completed: true,
-    type: 'weekly',
-  },
-  {
     id: 3,
-    name: 'Custom Delivery',
+    name: 'Squadron priority mission',
     completed: false,
     type: 'weekly',
   },
   {
     id: 4,
-    name: 'Wondrous Tails',
+    name: 'Challenge Logs',
     completed: false,
     type: 'weekly',
+    content: [
+      {
+        id: 1,
+        name: 'Battles',
+        completed: false,
+      },
+      {
+        id: 2,
+        name: 'PvP',
+        completed: false,
+      },
+      {
+        id: 3,
+        name: 'FATE',
+        completed: false,
+      },
+      {
+        id: 4,
+        name: 'Levequests',
+        completed: false,
+      },
+      {
+        id: 5,
+        name: 'Crafting & Gathering',
+        completed: false,
+      },
+      {
+        id: 6,
+        name: 'Treasure Hunt',
+        completed: false,
+      },
+      {
+        id: 7,
+        name: 'Tribal Quests',
+        completed: false,
+      },
+      {
+        id: 8,
+        name: 'Grand Company',
+        completed: false,
+      },
+      {
+        id: 9,
+        name: 'Retainer Ventures',
+        completed: false,
+      },
+      {
+        id: 10,
+        name: 'Gold Saucer',
+        completed: false,
+      },
+      {
+        id: 11,
+        name: 'Other (The Forbidden Land, Eureka)',
+        completed: false,
+      },
+      {
+        id: 12,
+        name: 'Other (Island Sanctuary)',
+        completed: false,
+      },
+      {
+        id: 13,
+        name: 'Overall Completion',
+        completed: false,
+      },
+    ],
   },
   {
     id: 5,
-    name: 'Retainer ventures',
+    name: 'Custom Delivery',
     completed: false,
-    type: 'daily',
+    type: 'weekly',
+    content: [
+      {
+        id: 1,
+        name: 'Zhloe Aliapoh',
+        completed: false,
+      },
+      {
+        id: 2,
+        name: "M'naago",
+        completed: false,
+      },
+      {
+        id: 3,
+        name: 'Kurenai',
+        completed: false,
+      },
+      {
+        id: 4,
+        name: 'Adkiragh',
+        completed: false,
+      },
+      {
+        id: 5,
+        name: 'Kai-Shirr',
+        completed: false,
+      },
+      {
+        id: 6,
+        name: 'Ehil Tou',
+        completed: false,
+      },
+      {
+        id: 7,
+        name: 'Charlemald',
+        completed: false,
+      },
+      {
+        id: 8,
+        name: 'Ameliance',
+        completed: false,
+      },
+      {
+        id: 9,
+        name: 'Anden',
+        completed: false,
+      },
+      {
+        id: 10,
+        name: 'Margrat',
+        completed: false,
+      },
+    ],
   },
   {
     id: 6,
-    name: 'Leve Allowance',
+    name: 'Wondrous Tails',
+    completed: false,
+    type: 'weekly',
+    content: {},
+  },
+  {
+    id: 7,
+    name: 'Normal raid lockout',
+    completed: false,
+    type: 'weekly',
+    content: [],
+  },
+  {
+    id: 8,
+    name: 'Savage raid lockout',
+    completed: false,
+    type: 'weekly',
+    content: [],
+  },
+  {
+    id: 9,
+    name: 'Alliance raid lockout',
+    completed: false,
+    type: 'weekly',
+    content: [],
+  },
+  {
+    id: 10,
+    name: 'Faux Hollows',
+    completed: false,
+    type: 'weekly',
+  },
+  {
+    id: 11,
+    name: 'Tomestone cap',
+    completed: false,
+    type: 'weekly',
+    content: [],
+  },
+  {
+    id: 12,
+    name: 'Doman Enclave donation',
+    completed: false,
+    type: 'weekly',
+  },
+  {
+    id: 13,
+    name: 'Masked Carnivale targets',
+    completed: false,
+    type: 'weekly',
+    content: [],
+  },
+  {
+    id: 14,
+    name: 'Blue Mage Log',
+    completed: false,
+    type: 'weekly',
+    content: [],
+  },
+  {
+    id: 15,
+    name: 'Gold Saucer tournaments',
+    completed: false,
+    type: 'weekly',
+    content: [],
+  },
+  {
+    id: 16,
+    name: 'Fashion Report',
+    completed: false,
+    type: 'weekly',
+    content: 'https://i.imgur.com/BOigGZO.png',
+  },
+  {
+    id: 17,
+    name: 'Jumbo Cactpot',
+    completed: false,
+    type: 'weekly',
+  },
+  {
+    id: 18,
+    name: 'Daily repeatable quests',
+    completed: false,
+    type: 'daily',
+    content: [],
+  },
+  {
+    id: 19,
+    name: 'Daily Hunt marks',
+    completed: false,
+    type: 'daily',
+    content: [],
+  },
+  {
+    id: 20,
+    name: 'Squadron missions',
     completed: false,
     type: 'daily',
   },
   {
-    id: 7,
-    name: 'Fashion Report',
+    id: 21,
+    name: 'Grand Company turn-ins',
     completed: false,
-    type: 'weekly',
+    type: 'daily',
+  },
+  {
+    id: 22,
+    name: 'Free Company voyages',
+    completed: false,
+    type: 'daily',
+  },
+  {
+    id: 23,
+    name: 'Retainer ventures',
+    completed: false,
+    type: 'daily',
+    content: [],
+  },
+  {
+    id: 24,
+    name: 'Housing gardening',
+    completed: false,
+    type: 'daily',
+  },
+  {
+    id: 25,
+    name: 'Tribal quests',
+    completed: false,
+    type: 'daily',
+    content: [],
+  },
+  {
+    id: 26,
+    name: 'Treasure map allowance',
+    completed: false,
+    type: 'daily',
+  },
+  {
+    id: 27,
+    name: 'Leve allowance',
+    completed: false,
+    type: 'daily',
+  },
+  {
+    id: 28,
+    name: 'Duty roulettes',
+    completed: false,
+    type: 'daily',
+    content: [],
+  },
+  {
+    id: 29,
+    name: 'Mini Cactpot',
+    completed: false,
+    type: 'daily',
+    content: '',
+  },
+  {
+    id: 30,
+    name: 'Island Sanctuary dailies',
+    completed: false,
+    type: 'daily',
   },
 ];
 
@@ -108,9 +380,13 @@ export const toggleSubtask = (taskId: number, subtaskId: number) => {
     return;
   }
 
-  const subtasks = tasks[taskIdx].subtasks;
+  const subtasks = tasks[taskIdx].content;
 
   if (!subtasks) {
+    return;
+  }
+
+  if (!Array.isArray(subtasks)) {
     return;
   }
 

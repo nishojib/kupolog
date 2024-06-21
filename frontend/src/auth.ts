@@ -23,9 +23,7 @@ declare module 'next-auth/jwt' {
 }
 
 const authOptions = {
-  pages: {
-    signIn: '/auth/login',
-  },
+  pages: { signIn: '/auth/login' },
   callbacks: {
     async jwt({ token, account }) {
       const api = new Api({ baseURL: process.env.NEXT_PUBLIC_API_URL });

@@ -1,6 +1,7 @@
 'use client';
 
 import { CaretSortIcon } from '@radix-ui/react-icons';
+import Image from 'next/image';
 import { useState, useTransition } from 'react';
 
 import { type Task } from '@/actions/dailies';
@@ -60,7 +61,7 @@ export function TaskCard(props: TaskProps) {
             {task.name}
           </label>
         </div>
-        {task.subtasks?.length && task.subtasks?.length > 0 && (
+        {task.content && (
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm">
               <CaretSortIcon className="size-4" />
@@ -69,9 +70,9 @@ export function TaskCard(props: TaskProps) {
           </CollapsibleTrigger>
         )}
       </div>
-      {task.subtasks?.length && task.subtasks?.length > 0 && (
+      {Array.isArray(task.content) && task.content?.length > 0 && (
         <CollapsibleContent className="space-y-2 border-t py-4 pl-16">
-          {task.subtasks?.map((subtask) => (
+          {task.content?.map((subtask) => (
             <div key={subtask.id} className="flex flex-row items-center gap-4">
               <Checkbox
                 className="rounded-full"
@@ -96,6 +97,16 @@ export function TaskCard(props: TaskProps) {
               </label>
             </div>
           ))}
+        </CollapsibleContent>
+      )}
+      {typeof task.content === 'string' && (
+        <CollapsibleContent className="space-y-2 border-t p-4">
+          <Image src={task.content} alt={task.name} width={800} height={300} />
+        </CollapsibleContent>
+      )}
+      {typeof task.content === 'object' && 'key' in task.content && (
+        <CollapsibleContent className="space-y-2 border-t py-4 pl-16">
+          <div>Some content</div>
         </CollapsibleContent>
       )}
     </Collapsible>
