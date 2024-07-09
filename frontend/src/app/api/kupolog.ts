@@ -29,12 +29,31 @@ export interface HandlersServerStatus {
   system_info?: HandlersServerInfo;
 }
 
+export interface ModelsSubtask {
+  completed?: boolean;
+  createdAt?: string;
+  isHidden?: boolean;
+  subtaskID?: string;
+  title?: string;
+}
+
+export interface ModelsTask {
+  completed?: boolean;
+  contentType?: string;
+  createdAt?: string;
+  isHidden?: boolean;
+  kind?: string;
+  subtasks?: ModelsSubtask[];
+  taskID?: string;
+  title?: string;
+}
+
 export interface ModelsUser {
-  created_at?: string;
+  createdAt?: string;
   email?: string;
   image?: string;
   name?: string;
-  user_id?: string;
+  userID?: string;
 }
 
 export type ProblemProblem = object;
@@ -118,6 +137,9 @@ export class HttpClient<SecurityDataType = unknown> {
   }
 
   protected createFormData(input: Record<string, unknown>): FormData {
+    if (input instanceof FormData) {
+      return input;
+    }
     return Object.keys(input || {}).reduce((formData, key) => {
       const property = input[key];
       const propertyContent: any[] = property instanceof Array ? property : [property];
@@ -267,6 +289,113 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+  };
+  dailies = {
+    /**
+     * @description Get the daily tasks
+     *
+     * @tags dailies
+     * @name DailyList
+     * @summary Daily tasks
+     * @request GET:/dailies/daily
+     */
+    dailyList: (params: RequestParams = {}) =>
+      this.request<
+        {
+          dailies?: ModelsTask[];
+        },
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/dailies/daily`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Toggle the subtask
+     *
+     * @tags dailies
+     * @name SubtasksUpdate
+     * @summary Toggle subtask
+     * @request PUT:/dailies/subtasks/{subtaskID}
+     */
+    subtasksUpdate: (subtaskId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          task?: ModelsSubtask;
+        },
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/dailies/subtasks/${subtaskId}`,
+        method: "PUT",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Toggle the task
+     *
+     * @tags dailies
+     * @name TasksUpdate
+     * @summary Toggle task
+     * @request PUT:/dailies/tasks/{taskID}
+     */
+    tasksUpdate: (taskId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          task?: ModelsTask;
+        },
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/dailies/tasks/${taskId}`,
+        method: "PUT",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get the weekly tasks
+     *
+     * @tags dailies
+     * @name WeeklyList
+     * @summary Weekly tasks
+     * @request GET:/dailies/weekly
+     */
+    weeklyList: (params: RequestParams = {}) =>
+      this.request<
+        {
+          weeklies?: ModelsTask[];
+        },
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/dailies/weekly`,
+        method: "GET",
+        format: "json",
         ...params,
       }),
   };

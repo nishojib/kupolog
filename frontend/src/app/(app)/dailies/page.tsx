@@ -1,6 +1,8 @@
+import { revalidatePath } from 'next/cache';
+
 import {
-  getDailyTasks,
-  getWeeklyTasks,
+  getDailies,
+  getWeeklies,
   toggleSubtask,
   toggleTask,
 } from '@/actions/dailies';
@@ -8,8 +10,10 @@ import { TaskCard } from '@/components/task';
 import { DailyTimer, WeeklyTimer } from '@/components/timer';
 
 export default async function Page() {
-  const weeklyTasks = getWeeklyTasks();
-  const dailyTasks = getDailyTasks();
+  const [weeklyTasks, dailyTasks] = await Promise.all([
+    getWeeklies(),
+    getDailies(),
+  ]);
 
   return (
     <div className="container">
@@ -22,17 +26,19 @@ export default async function Page() {
             </p>
           </div>
           <ul className="space-y-4">
-            {weeklyTasks.map((task) => (
+            {weeklyTasks?.map((task) => (
               <TaskCard
-                key={task.id}
+                key={task.taskID}
                 task={task}
-                updateTask={async (id) => {
+                updateTask={async (taskID) => {
                   'use server';
-                  toggleTask(id);
+                  await toggleTask(taskID);
+                  revalidatePath('/');
                 }}
-                updateSubtask={async (taskId, subtaskId) => {
+                updateSubtask={async (subtaskID) => {
                   'use server';
-                  toggleSubtask(taskId, subtaskId);
+                  await toggleSubtask(subtaskID);
+                  revalidatePath('/');
                 }}
               />
             ))}
@@ -46,17 +52,19 @@ export default async function Page() {
             </p>
           </div>
           <ul className="space-y-4">
-            {dailyTasks.map((task) => (
+            {dailyTasks?.map((task) => (
               <TaskCard
-                key={task.id}
+                key={task.taskID}
                 task={task}
-                updateTask={async () => {
+                updateTask={async (taskID) => {
                   'use server';
-                  toggleTask(task.id);
+                  await toggleTask(taskID);
+                  revalidatePath('/');
                 }}
-                updateSubtask={async (taskId, subtaskId) => {
+                updateSubtask={async (subtaskID) => {
                   'use server';
-                  toggleSubtask(taskId, subtaskId);
+                  await toggleSubtask(subtaskID);
+                  revalidatePath('/');
                 }}
               />
             ))}

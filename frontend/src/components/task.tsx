@@ -1,10 +1,10 @@
 'use client';
 
+import { CollapsibleTriggerProps } from '@radix-ui/react-collapsible';
 import { CaretSortIcon } from '@radix-ui/react-icons';
-import Image from 'next/image';
 import { useState, useTransition } from 'react';
 
-import { type Task } from '@/actions/dailies';
+import { ModelsTask } from '@/app/api/kupolog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -15,9 +15,9 @@ import {
 import { cn } from '@/lib/utils';
 
 type TaskProps = {
-  task: Task;
-  updateTask: (id: number) => Promise<void>;
-  updateSubtask: (taskId: number, subtaskId: number) => Promise<void>;
+  task: ModelsTask;
+  updateTask: (taskID: string) => Promise<void>;
+  updateSubtask: (subtaskID: string) => Promise<void>;
 };
 
 export function TaskCard(props: TaskProps) {
@@ -41,16 +41,20 @@ export function TaskCard(props: TaskProps) {
       <div className="flex items-center justify-between space-x-4 px-4">
         <div className="flex flex-row items-center gap-4 p-6">
           <Checkbox
-            id={`task-${task.id.toString()}`}
+            id={`task-${task.taskID?.toString()}`}
             checked={task.completed}
             onCheckedChange={() => {
               startTransition(() => {
-                updateTask(task.id);
+                if (!task.taskID) {
+                  return;
+                }
+
+                updateTask(task.taskID);
               });
             }}
           />
           <label
-            htmlFor={`task-${task.id.toString()}`}
+            htmlFor={`task-${task.taskID?.toString()}`}
             className={cn(
               'cursor-pointer select-none leading-none tracking-tight',
               {
@@ -58,34 +62,48 @@ export function TaskCard(props: TaskProps) {
               },
             )}
           >
-            {task.name}
+            {task.title}
           </label>
         </div>
-        {task.content && (
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <CaretSortIcon className="size-4" />
-              <span className="sr-only">Toggle</span>
-            </Button>
-          </CollapsibleTrigger>
-        )}
+
+        <DailyContentTrigger
+          show={
+            (task.contentType === 'subtask' &&
+              task.subtasks?.length !== undefined &&
+              task.subtasks?.length > 0) ||
+            task.contentType === 'image' ||
+            task.contentType === 'embed'
+          }
+        >
+          <Button variant="ghost" size="sm">
+            <CaretSortIcon className="size-4" />
+            <span className="sr-only">Toggle</span>
+          </Button>
+        </DailyContentTrigger>
       </div>
-      {Array.isArray(task.content) && task.content?.length > 0 && (
+      {task.contentType === 'subtask' && (
         <CollapsibleContent className="space-y-2 border-t py-4 pl-16">
-          {task.content?.map((subtask) => (
-            <div key={subtask.id} className="flex flex-row items-center gap-4">
+          {task.subtasks?.map((subtask) => (
+            <div
+              key={subtask.subtaskID}
+              className="flex flex-row items-center gap-4"
+            >
               <Checkbox
                 className="rounded-full"
-                id={`subtask-${subtask.id.toString()}`}
+                id={`subtask-${subtask.subtaskID?.toString()}`}
                 checked={subtask.completed}
                 onCheckedChange={() => {
                   startTransition(() => {
-                    updateSubtask(task.id, subtask.id);
+                    if (!subtask.subtaskID) {
+                      return;
+                    }
+
+                    updateSubtask(subtask.subtaskID);
                   });
                 }}
               />
               <label
-                htmlFor={`subtask-${subtask.id.toString()}`}
+                htmlFor={`subtask-${subtask.subtaskID?.toString()}`}
                 className={cn(
                   'cursor-pointer select-none leading-none tracking-tight',
                   {
@@ -93,22 +111,42 @@ export function TaskCard(props: TaskProps) {
                   },
                 )}
               >
-                {subtask.name}
+                {subtask.title}
               </label>
             </div>
           ))}
         </CollapsibleContent>
       )}
-      {typeof task.content === 'string' && (
+      {task.contentType === 'image' && (
         <CollapsibleContent className="space-y-2 border-t p-4">
-          <Image src={task.content} alt={task.name} width={800} height={300} />
+          <div>Get the image here</div>
+          {/* <Image src={} alt={task.title ?? ""} width={800} height={300} /> */}
         </CollapsibleContent>
       )}
-      {typeof task.content === 'object' && 'key' in task.content && (
+      {task.contentType === 'embed' && (
         <CollapsibleContent className="space-y-2 border-t py-4 pl-16">
-          <div>Some content</div>
+          <div>Get the embed here</div>
         </CollapsibleContent>
       )}
     </Collapsible>
+  );
+}
+
+function DailyContentTrigger(
+  props: CollapsibleTriggerProps & { show: boolean },
+) {
+  const { show, ...rest } = props;
+
+  if (!show) {
+    return <></>;
+  }
+
+  return (
+    <CollapsibleTrigger asChild {...rest}>
+      <Button variant="ghost" size="sm">
+        <CaretSortIcon className="size-4" />
+        <span className="sr-only">Toggle</span>
+      </Button>
+    </CollapsibleTrigger>
   );
 }

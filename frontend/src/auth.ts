@@ -4,7 +4,7 @@ import NextAuth, { type NextAuthConfig, User } from 'next-auth';
 import Discord from 'next-auth/providers/discord';
 import Google from 'next-auth/providers/google';
 
-import { Api } from './app/api/api';
+import { kupologApi } from '@/app/api';
 
 declare module 'next-auth' {
   interface Session {
@@ -26,13 +26,11 @@ const authOptions = {
   pages: { signIn: '/auth/login' },
   callbacks: {
     async jwt({ token, account }) {
-      const api = new Api({ baseURL: process.env.NEXT_PUBLIC_API_URL });
-
       if (account) {
         // First login, save the `access_token`, `refresh_token`, and other
         // details into the JWT
 
-        const { data } = await api.auth.loginCreate({
+        const { data } = await kupologApi.auth.loginCreate({
           provider: account?.provider,
           provider_account_id: account?.providerAccountId,
           access_token: account?.access_token,
@@ -40,7 +38,7 @@ const authOptions = {
         });
 
         const userProfile: User = {
-          id: data.user?.user_id,
+          id: data.user?.userID,
           name: data.user?.name,
           email: data.user?.email,
           image: data?.user?.image,
@@ -61,7 +59,7 @@ const authOptions = {
         }
 
         try {
-          const { data } = await api.auth.refreshCreate({
+          const { data } = await kupologApi.auth.refreshCreate({
             headers: { Authorization: `Bearer ${token.refresh_token}` },
           });
 
