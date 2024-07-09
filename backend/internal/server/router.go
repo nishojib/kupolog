@@ -47,6 +47,11 @@ func NewRoutes(
 		v1Router.Post("/auth/login", handlers.Login(db, authSecret))
 		v1Router.Post("/auth/refresh", handlers.RefreshToken(db, authSecret))
 		v1Router.Post("/auth/revoke", handlers.RevokeToken(db))
+
+		v1Router.Get("/dailies/weekly", handlers.Weeklies(db))
+		v1Router.Get("/dailies/daily", handlers.Dailies(db))
+		v1Router.Put("/dailies/tasks/{taskID}", handlers.ToggleTask(db))
+		v1Router.Put("/dailies/subtasks/{subtaskID}", handlers.ToggleSubtask(db))
 	})
 
 	return router

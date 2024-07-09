@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Revocation struct {
-	ID        string    `json:"id"         bun:"id,pk,autoincrement"`
+	ID        string    `json:"id"        bun:"id,pk,autoincrement"`
 	Token     string    `json:"token"`
-	RevokedAt time.Time `json:"revoked_at" bun:",default:current_timestamp"`
+	RevokedAt time.Time `json:"revokedAt" bun:",default:current_timestamp"`
 }

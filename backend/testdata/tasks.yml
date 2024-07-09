@@ -4,7 +4,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Weekly repeatable quests'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -13,7 +13,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Weekly Hunt Marks'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -22,7 +22,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Squadron priority mission'
       completed: false
-      task_type: 'task'
+      content_type: 'none'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -31,7 +31,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Challenge Logs'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -40,7 +40,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Custom Delivery'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -49,7 +49,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Wondrous Tails'
       completed: false
-      task_type: 'task'
+      content_type: 'embed'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -58,7 +58,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Normal raid lockout'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -67,7 +67,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Savage raid lockout'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -76,7 +76,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Alliance raid lockout'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -85,7 +85,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Faux Hollows'
       completed: false
-      task_type: 'task'
+      content_type: 'none'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -94,7 +94,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Tomestone cap'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -103,7 +103,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Doman Enclave donation'
       completed: false
-      task_type: 'task'
+      content_type: 'none'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -112,7 +112,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Masked Carnivale targets'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -121,7 +121,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Blue Mage Log'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -130,7 +130,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Gold Saucer tournaments'
       completed: false
-      task_type: 'task'
+      content_type: 'none'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -139,7 +139,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Fashion Report'
       completed: false
-      task_type: 'task'
+      content_type: 'image'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -148,7 +148,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Jumbo Cactpot'
       completed: false
-      task_type: 'task'
+      content_type: 'none'
       kind: 'weekly'
       is_hidden: false
       created_at: '{{ now }}'
@@ -157,7 +157,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Daily repeatable quests'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -166,7 +166,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Daily Hunt marks'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -175,7 +175,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Squadron missions'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -184,7 +184,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Grand Company turn ins'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -193,7 +193,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Free Company voyages'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -202,7 +202,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Retainer ventures'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -211,16 +211,16 @@
       task_id: '{{ cuid2 }}'
       title: 'Housing gardening'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
       version: 1
-    - _id: trial_quests
+    - _id: tribal_quests
       task_id: '{{ cuid2 }}'
       title: 'Tribal quests'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -229,7 +229,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Treasure map allowance'
       completed: false
-      task_type: 'task'
+      content_type: 'none'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -238,7 +238,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Leve allowance'
       completed: false
-      task_type: 'task'
+      content_type: 'none'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -247,7 +247,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Duty roulettes'
       completed: false
-      task_type: 'task'
+      content_type: 'subtask'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -256,7 +256,7 @@
       task_id: '{{ cuid2 }}'
       title: 'Mini Cactpot'
       completed: false
-      task_type: 'task'
+      content_type: 'task'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
@@ -265,289 +265,8 @@
       task_id: '{{ cuid2 }}'
       title: 'Island Sanctuary dailies'
       completed: false
-      task_type: 'task'
+      content_type: 'none'
       kind: 'daily'
       is_hidden: false
       created_at: '{{ now }}'
-      version: 1
-    - _id: arr_hunt_marks
-      task_id: '{{ cuid2 }}'
-      title: 'ARR Hunt Marks'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
-    - _id: heavensward_hunt_marks
-      task_id: '{{ cuid2 }}'
-      title: 'Heavensward Hunt Marks'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
-    - _id: stormblood_hunt_marks
-      task_id: '{{ cuid2 }}'
-      title: 'Stormblood Hunt Marks'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
-    - _id: shadowbringers_hunt_marks
-      task_id: '{{ cuid2 }}'
-      title: 'Shadowbringers Hunt Marks'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
-    - _id: endwalker_hunt_marks
-      task_id: '{{ cuid2 }}'
-      title: 'Endwalker Hunt Marks'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
-    - _id: battles
-      task_id: '{{ cuid2 }}'
-      title: 'Battles'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: pvp
-      task_id: '{{ cuid2 }}'
-      title: 'PvP'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: fate
-      task_id: '{{ cuid2 }}'
-      title: 'FATE'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: levequests
-      task_id: '{{ cuid2 }}'
-      title: 'Levequests'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: crafting
-      task_id: '{{ cuid2 }}'
-      title: 'Crafting & Gathering'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: treasure_hunt
-      task_id: '{{ cuid2 }}'
-      title: 'Treasure Hunt'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: tribal_quests
-      task_id: '{{ cuid2 }}'
-      title: 'Tribal Quests'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: grand_company
-      task_id: '{{ cuid2 }}'
-      title: 'Grand Company'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: retainer_ventures
-      task_id: '{{ cuid2 }}'
-      title: 'Retainer Ventures'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: gold_saucer
-      task_id: '{{ cuid2 }}'
-      title: 'Gold Saucer'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: other
-      task_id: '{{ cuid2 }}'
-      title: 'Other (The Forbidden Land, Eureka)'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: other
-      task_id: '{{ cuid2 }}'
-      title: 'Other (Island Sanctuary)'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: overall
-      task_id: '{{ cuid2 }}'
-      title: 'Overall Completion'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.challenge_logs.TaskID }}'
-    - _id: zhloe_aliapoh
-      task_id: '{{ cuid2 }}'
-      title: 'Zhloe Aliapoh'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: mnaago
-      task_id: '{{ cuid2 }}'
-      title: "M'naago"
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: kurenai
-      task_id: '{{ cuid2 }}'
-      title: 'Kurenai'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: adkiragh
-      task_id: '{{ cuid2 }}'
-      title: 'Adkiragh'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: kai_shirtr
-      task_id: '{{ cuid2 }}'
-      title: 'Kai-Shirr'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: ehil_tou
-      task_id: '{{ cuid2 }}'
-      title: 'Ehil Tou'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: charlemald
-      task_id: '{{ cuid2 }}'
-      title: 'Charlemald'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: ameliance
-      task_id: '{{ cuid2 }}'
-      title: 'Ameliance'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: anden
-      task_id: '{{ cuid2 }}'
-      title: 'Anden'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-    - _id: margrat
-      task_id: '{{ cuid2 }}'
-      title: 'Margrat'
-      completed: false
-      task_type: 'subtask'
-      kind: 'weekly'
-      is_hidden: false
-      created_at: '{{ now }}'
-      version: 1
-      parent_id: '{{ $.Task.custom_delivery.TaskID }}'
-
+      version: 1 

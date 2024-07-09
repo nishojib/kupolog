@@ -63,7 +63,7 @@ func main() {
 		db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
 
-	db.RegisterModel((*models.Task)(nil))
+	db.RegisterModel((*models.Task)(nil), (*models.Subtask)(nil))
 
 	funcMap := template.FuncMap{
 		"cuid2": func() string {
@@ -77,6 +77,12 @@ func main() {
 	slog.Info("seeding tasks...")
 	fixture := dbfixture.New(db, dbfixture.WithTemplateFuncs(funcMap))
 	if err = fixture.Load(ctx, os.DirFS("testdata"), "tasks.yml"); err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+
+	slog.Info("seeding subtasks...")
+	if err = fixture.Load(ctx, os.DirFS("testdata"), "subtasks.yml"); err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}

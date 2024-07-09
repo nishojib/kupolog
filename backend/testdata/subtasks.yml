@@ -1,0 +1,227 @@
+- model: Subtask
+  rows:
+    - _id: arr_hunt_marks
+      subtask_id: '{{ cuid2 }}'
+      title: 'ARR Hunt Marks'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
+    - _id: heavensward_hunt_marks
+      subtask_id: '{{ cuid2 }}'
+      title: 'Heavensward Hunt Marks'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
+    - _id: stormblood_hunt_marks
+      subtask_id: '{{ cuid2 }}'
+      title: 'Stormblood Hunt Marks'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
+    - _id: shadowbringers_hunt_marks
+      subtask_id: '{{ cuid2 }}'
+      title: 'Shadowbringers Hunt Marks'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
+    - _id: endwalker_hunt_marks
+      subtask_id: '{{ cuid2 }}'
+      title: 'Endwalker Hunt Marks'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.weekly_hunt_marks.TaskID }}'
+    - _id: battles
+      subtask_id: '{{ cuid2 }}'
+      title: 'Battles'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: pvp
+      subtask_id: '{{ cuid2 }}'
+      title: 'PvP'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: fate
+      subtask_id: '{{ cuid2 }}'
+      title: 'FATE'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: levequests
+      subtask_id: '{{ cuid2 }}'
+      title: 'Levequests'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: crafting
+      subtask_id: '{{ cuid2 }}'
+      title: 'Crafting & Gathering'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: treasure_hunt
+      subtask_id: '{{ cuid2 }}'
+      title: 'Treasure Hunt'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: tribal_quests
+      subtask_id: '{{ cuid2 }}'
+      title: 'Tribal Quests'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: grand_company
+      subtask_id: '{{ cuid2 }}'
+      title: 'Grand Company'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: retainer_ventures
+      subtask_id: '{{ cuid2 }}'
+      title: 'Retainer Ventures'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: gold_saucer
+      subtask_id: '{{ cuid2 }}'
+      title: 'Gold Saucer'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: other
+      subtask_id: '{{ cuid2 }}'
+      title: 'Other (The Forbidden Land, Eureka)'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: other
+      subtask_id: '{{ cuid2 }}'
+      title: 'Other (Island Sanctuary)'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: overall
+      subtask_id: '{{ cuid2 }}'
+      title: 'Overall Completion'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.challenge_logs.TaskID }}'
+    - _id: zhloe_aliapoh
+      subtask_id: '{{ cuid2 }}'
+      title: 'Zhloe Aliapoh'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: mnaago
+      subtask_id: '{{ cuid2 }}'
+      title: "M'naago"
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: kurenai
+      subtask_id: '{{ cuid2 }}'
+      title: 'Kurenai'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: adkiragh
+      subtask_id: '{{ cuid2 }}'
+      title: 'Adkiragh'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: kai_shirtr
+      subtask_id: '{{ cuid2 }}'
+      title: 'Kai-Shirr'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: ehil_tou
+      subtask_id: '{{ cuid2 }}'
+      title: 'Ehil Tou'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: charlemald
+      subtask_id: '{{ cuid2 }}'
+      title: 'Charlemald'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: ameliance
+      subtask_id: '{{ cuid2 }}'
+      title: 'Ameliance'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: anden
+      subtask_id: '{{ cuid2 }}'
+      title: 'Anden'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+    - _id: margrat
+      subtask_id: '{{ cuid2 }}'
+      title: 'Margrat'
+      completed: false
+      is_hidden: false
+      created_at: '{{ now }}'
+      version: 1
+      task_id: '{{ $.Task.custom_delivery.TaskID }}'
+

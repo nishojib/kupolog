@@ -8,13 +8,13 @@ import (
 
 // User represents a user in the database.
 type User struct {
-	ID        int64     `json:"-"          bun:"id,pk,autoincrement"`
-	UserID    string    `json:"user_id"`
+	ID        int64     `json:"-"         bun:"id,pk,autoincrement"`
+	UserID    string    `json:"userID"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Image     string    `json:"image"`
-	CreatedAt time.Time `json:"created_at" bun:",default:current_timestamp"`
-	DeletedAt time.Time `json:"-"          bun:",soft_delete"`
+	CreatedAt time.Time `json:"createdAt" bun:",default:current_timestamp"`
+	DeletedAt time.Time `json:"-"         bun:",soft_delete"`
 	Version   int64     `json:"-"`
 }
 

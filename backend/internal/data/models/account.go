@@ -7,13 +7,13 @@ import (
 )
 
 type Account struct {
-	ID                int64     `json:"_"                   bun:"id,pk,autoincrement"`
-	UserID            int64     `json:"user_id"`
+	ID                int64     `json:"_"                 bun:"id,pk,autoincrement"`
+	UserID            int64     `json:"userID"`
 	Provider          string    `json:"provider"`
-	ProviderAccountID string    `json:"provider_account_id"`
+	ProviderAccountID string    `json:"providerAccountId"`
 	Email             string    `json:"email"`
-	CreatedAt         time.Time `json:"created_at"          bun:",default:current_timestamp"`
-	DeletedAt         time.Time `json:"deleted_at"          bun:",soft_delete"`
+	CreatedAt         time.Time `json:"createdAt"         bun:",default:current_timestamp"`
+	DeletedAt         time.Time `json:"deletedAt"         bun:",soft_delete"`
 	Version           int64     `json:"version"`
 }
 

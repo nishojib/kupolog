@@ -29,9 +29,43 @@ definitions:
         - $ref: '#/definitions/handlers.ServerInfo'
         description: SystemInfo contains information about the system
     type: object
+  models.Subtask:
+    properties:
+      completed:
+        type: boolean
+      createdAt:
+        type: string
+      isHidden:
+        type: boolean
+      subtaskID:
+        type: string
+      title:
+        type: string
+    type: object
+  models.Task:
+    properties:
+      completed:
+        type: boolean
+      contentType:
+        type: string
+      createdAt:
+        type: string
+      isHidden:
+        type: boolean
+      kind:
+        type: string
+      subtasks:
+        items:
+          $ref: '#/definitions/models.Subtask'
+        type: array
+      taskID:
+        type: string
+      title:
+        type: string
+    type: object
   models.User:
     properties:
-      created_at:
+      createdAt:
         type: string
       email:
         type: string
@@ -39,7 +73,7 @@ definitions:
         type: string
       name:
         type: string
-      user_id:
+      userID:
         type: string
     type: object
   problem.Problem:
@@ -246,6 +280,194 @@ paths:
       summary: revoke token
       tags:
       - auth
+  /dailies/daily:
+    get:
+      description: Get the daily tasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              dailies:
+                items:
+                  $ref: '#/definitions/models.Task'
+                type: array
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: Daily tasks
+      tags:
+      - dailies
+  /dailies/subtasks/{subtaskID}:
+    put:
+      consumes:
+      - application/json
+      description: Toggle the subtask
+      parameters:
+      - description: Subtask ID
+        in: path
+        name: subtaskID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              task:
+                $ref: '#/definitions/models.Subtask'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: Toggle subtask
+      tags:
+      - dailies
+  /dailies/tasks/{taskID}:
+    put:
+      consumes:
+      - application/json
+      description: Toggle the task
+      parameters:
+      - description: Task ID
+        in: path
+        name: taskID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              task:
+                $ref: '#/definitions/models.Task'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: Toggle task
+      tags:
+      - dailies
+  /dailies/weekly:
+    get:
+      description: Get the weekly tasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              weeklies:
+                items:
+                  $ref: '#/definitions/models.Task'
+                type: array
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: Weekly tasks
+      tags:
+      - dailies
   /health:
     get:
       description: Checks the health of the service
