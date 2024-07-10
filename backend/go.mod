@@ -5,6 +5,8 @@ go 1.22
 require (
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/httprate v0.9.0
+	github.com/gojuno/minimock/v3 v3.3.13
+	github.com/jarcoal/httpmock v1.3.1
 	github.com/nrednav/cuid2 v1.0.0
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/swag v1.16.3

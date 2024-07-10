@@ -44,7 +44,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.AccountRequest"
+                            "$ref": "#/definitions/server.AccountRequest"
                         }
                     }
                 ],
@@ -52,23 +52,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "token": {
-                                    "type": "object",
-                                    "properties": {
-                                        "access_token": {
-                                            "type": "string"
-                                        },
-                                        "refresh_token": {
-                                            "type": "string"
-                                        }
-                                    }
-                                },
-                                "user": {
-                                    "$ref": "#/definitions/models.User"
-                                }
-                            }
+                            "$ref": "#/definitions/server.LoginResponse"
                         }
                     },
                     "400": {
@@ -331,85 +315,8 @@ const docTemplate = `{
                                 "dailies": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/definitions/models.Task"
+                                        "$ref": "#/definitions/task.Task"
                                     }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "detail": {
-                                    "type": "string"
-                                },
-                                "status": {
-                                    "type": "integer"
-                                },
-                                "title": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "detail": {
-                                    "type": "string"
-                                },
-                                "status": {
-                                    "type": "integer"
-                                },
-                                "title": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/dailies/subtasks/{subtaskID}": {
-            "put": {
-                "description": "Toggle the subtask",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "dailies"
-                ],
-                "summary": "Toggle subtask",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Subtask ID",
-                        "name": "subtaskID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "task": {
-                                    "$ref": "#/definitions/models.Subtask"
                                 }
                             }
                         }
@@ -486,7 +393,7 @@ const docTemplate = `{
                             "type": "object",
                             "properties": {
                                 "task": {
-                                    "$ref": "#/definitions/models.Task"
+                                    "$ref": "#/definitions/task.Task"
                                 }
                             }
                         }
@@ -553,7 +460,7 @@ const docTemplate = `{
                                 "weeklies": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/definitions/models.Task"
+                                        "$ref": "#/definitions/task.Task"
                                     }
                                 }
                             }
@@ -616,7 +523,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ServerStatus"
+                            "$ref": "#/definitions/server.ServerStatus"
                         }
                     },
                     "500": {
@@ -630,7 +537,10 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.AccountRequest": {
+        "problem.Problem": {
+            "type": "object"
+        },
+        "server.AccountRequest": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -647,88 +557,29 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.ServerInfo": {
+        "server.LoginResponse": {
             "type": "object",
             "properties": {
-                "environment": {
+                "token": {
+                    "$ref": "#/definitions/server.LoginTokenResponse"
+                },
+                "user": {
+                    "$ref": "#/definitions/server.LoginUserResponse"
+                }
+            }
+        },
+        "server.LoginTokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
                     "type": "string"
                 },
-                "version": {
+                "refresh_token": {
                     "type": "string"
                 }
             }
         },
-        "handlers.ServerStatus": {
-            "description": "Response for the health check",
-            "type": "object",
-            "properties": {
-                "status": {
-                    "description": "Status is the health status of the service",
-                    "type": "string"
-                },
-                "system_info": {
-                    "description": "SystemInfo contains information about the system",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/handlers.ServerInfo"
-                        }
-                    ]
-                }
-            }
-        },
-        "models.Subtask": {
-            "type": "object",
-            "properties": {
-                "completed": {
-                    "type": "boolean"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "isHidden": {
-                    "type": "boolean"
-                },
-                "subtaskID": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Task": {
-            "type": "object",
-            "properties": {
-                "completed": {
-                    "type": "boolean"
-                },
-                "contentType": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "isHidden": {
-                    "type": "boolean"
-                },
-                "kind": {
-                    "type": "string"
-                },
-                "subtasks": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Subtask"
-                    }
-                },
-                "taskID": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.User": {
+        "server.LoginUserResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -748,8 +599,60 @@ const docTemplate = `{
                 }
             }
         },
-        "problem.Problem": {
-            "type": "object"
+        "server.ServerInfo": {
+            "type": "object",
+            "properties": {
+                "environment": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.ServerStatus": {
+            "description": "Response for the health check",
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status is the health status of the service",
+                    "type": "string"
+                },
+                "system_info": {
+                    "description": "SystemInfo contains information about the system",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/server.ServerInfo"
+                        }
+                    ]
+                }
+            }
+        },
+        "task.Task": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean"
+                },
+                "contentType": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "isHidden": {
+                    "type": "boolean"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "taskID": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {

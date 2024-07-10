@@ -1,0 +1,126 @@
+{
+  "weeklies": [
+    {
+      "taskID": "weekly_repeatable_quests",
+      "title": "Weekly repeatable quests"
+    },
+    {
+      "taskID": "weekly_hunt_marks",
+      "title": "Weekly Hunt Marks"
+    },
+    {
+      "taskID": "squadron_priority_mission",
+      "title": "Squadron priority mission"
+    },
+    {
+      "taskID": "challenge_logs",
+      "title": "Challenge Logs"
+    },
+    {
+      "taskID": "custom_delivery",
+      "title": "Custom Delivery"
+    },
+    {
+      "taskID": "wondrous_tails",
+      "title": "Wondrous Tails"
+    },
+    {
+      "taskID": "normal_raid_lockout",
+      "title": "Normal raid lockout"
+    },
+    {
+      "taskID": "savage_raid_lockout",
+      "title": "Savage raid lockout"
+    },
+    {
+      "taskID": "alliance_raid_lockout",
+      "title": "Alliance raid lockout"
+    },
+    {
+      "taskID": "faux_hollows",
+      "title": "Faux Hollows"
+    },
+    {
+      "taskID": "tomestone_cap",
+      "title": "Tomestone cap"
+    },
+    {
+      "taskID": "domain_enclave_donation",
+      "title": "Doman Enclave donation"
+    },
+    {
+      "taskID": "masked_carnivale_targets",
+      "title": "Masked Carnivale targets"
+    },
+    {
+      "taskID": "blue_mage_log",
+      "title": "Blue Mage Log"
+    },
+    {
+      "taskID": "gold_saucer_tournaments",
+      "title": "Gold Saucer tournaments"
+    },
+    {
+      "taskID": "fashion_report",
+      "title": "Fashion Report"
+    },
+    {
+      "taskID": "jumbo_cactpot",
+      "title": "Jumbo Cactpot"
+    }
+  ],
+  "dailies": [
+    {
+      "taskID": "daily_repeatable_quests",
+      "title": "Daily repeatable quests"
+    },
+    {
+      "taskID": "daily_hunt_marks",
+      "title": "Daily Hunt marks"
+    },
+    {
+      "taskID": "squadron_missions",
+      "title": "Squadron missions"
+    },
+    {
+      "taskID": "grand_company_turn_ins",
+      "title": "Grand Company turn ins"
+    },
+    {
+      "taskID": "free_company_voyages",
+      "title": "Free Company voyages"
+    },
+    {
+      "taskID": "retainer_ventures",
+      "title": "Retainer ventures"
+    },
+    {
+      "taskID": "housing_gardening",
+      "title": "Housing gardening"
+    },
+    {
+      "taskID": "tribal_quests",
+      "title": "Tribal quests"
+    },
+    {
+      "taskID": "treasure_map_allowance",
+      "title": "Treasure map allowance"
+    },
+    {
+      "taskID": "leve_allowance",
+      "title": "Leve allowance"
+    },
+    {
+      "taskID": "duty_roulette",
+      "title": "Duty roulettes"
+    },
+    {
+      "taskID": "mini_cactpot",
+      "title": "Mini Cactpot"
+    },
+    {
+      "taskID": "island_sanctuary_dailies",
+      "title": "Island Sanctuary dailies"
+    }
+  ]
+}

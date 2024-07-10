@@ -1,6 +1,8 @@
 basePath: /v1
 definitions:
-  handlers.AccountRequest:
+  problem.Problem:
+    type: object
+  server.AccountRequest:
     properties:
       access_token:
         type: string
@@ -11,59 +13,21 @@ definitions:
       provider_account_id:
         type: string
     type: object
-  handlers.ServerInfo:
+  server.LoginResponse:
     properties:
-      environment:
+      token:
+        $ref: '#/definitions/server.LoginTokenResponse'
+      user:
+        $ref: '#/definitions/server.LoginUserResponse'
+    type: object
+  server.LoginTokenResponse:
+    properties:
+      access_token:
         type: string
-      version:
+      refresh_token:
         type: string
     type: object
-  handlers.ServerStatus:
-    description: Response for the health check
-    properties:
-      status:
-        description: Status is the health status of the service
-        type: string
-      system_info:
-        allOf:
-        - $ref: '#/definitions/handlers.ServerInfo'
-        description: SystemInfo contains information about the system
-    type: object
-  models.Subtask:
-    properties:
-      completed:
-        type: boolean
-      createdAt:
-        type: string
-      isHidden:
-        type: boolean
-      subtaskID:
-        type: string
-      title:
-        type: string
-    type: object
-  models.Task:
-    properties:
-      completed:
-        type: boolean
-      contentType:
-        type: string
-      createdAt:
-        type: string
-      isHidden:
-        type: boolean
-      kind:
-        type: string
-      subtasks:
-        items:
-          $ref: '#/definitions/models.Subtask'
-        type: array
-      taskID:
-        type: string
-      title:
-        type: string
-    type: object
-  models.User:
+  server.LoginUserResponse:
     properties:
       createdAt:
         type: string
@@ -76,7 +40,40 @@ definitions:
       userID:
         type: string
     type: object
-  problem.Problem:
+  server.ServerInfo:
+    properties:
+      environment:
+        type: string
+      version:
+        type: string
+    type: object
+  server.ServerStatus:
+    description: Response for the health check
+    properties:
+      status:
+        description: Status is the health status of the service
+        type: string
+      system_info:
+        allOf:
+        - $ref: '#/definitions/server.ServerInfo'
+        description: SystemInfo contains information about the system
+    type: object
+  task.Task:
+    properties:
+      completed:
+        type: boolean
+      contentType:
+        type: string
+      createdAt:
+        type: string
+      isHidden:
+        type: boolean
+      kind:
+        type: string
+      taskID:
+        type: string
+      title:
+        type: string
     type: object
 externalDocs:
   description: OpenAPI
@@ -106,24 +103,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.AccountRequest'
+          $ref: '#/definitions/server.AccountRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            properties:
-              token:
-                properties:
-                  access_token:
-                    type: string
-                  refresh_token:
-                    type: string
-                type: object
-              user:
-                $ref: '#/definitions/models.User'
-            type: object
+            $ref: '#/definitions/server.LoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -292,7 +279,7 @@ paths:
             properties:
               dailies:
                 items:
-                  $ref: '#/definitions/models.Task'
+                  $ref: '#/definitions/task.Task'
                 type: array
             type: object
         "404":
@@ -324,56 +311,6 @@ paths:
       summary: Daily tasks
       tags:
       - dailies
-  /dailies/subtasks/{subtaskID}:
-    put:
-      consumes:
-      - application/json
-      description: Toggle the subtask
-      parameters:
-      - description: Subtask ID
-        in: path
-        name: subtaskID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            properties:
-              task:
-                $ref: '#/definitions/models.Subtask'
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-      summary: Toggle subtask
-      tags:
-      - dailies
   /dailies/tasks/{taskID}:
     put:
       consumes:
@@ -393,7 +330,7 @@ paths:
           schema:
             properties:
               task:
-                $ref: '#/definitions/models.Task'
+                $ref: '#/definitions/task.Task'
             type: object
         "404":
           description: Not Found
@@ -436,7 +373,7 @@ paths:
             properties:
               weeklies:
                 items:
-                  $ref: '#/definitions/models.Task'
+                  $ref: '#/definitions/task.Task'
                 type: array
             type: object
         "404":
@@ -477,7 +414,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.ServerStatus'
+            $ref: '#/definitions/server.ServerStatus'
         "500":
           description: Internal Server Error
           schema:
