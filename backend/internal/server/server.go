@@ -14,40 +14,50 @@ import (
 
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/options"
-	"github.com/uptrace/bun"
+	"github.com/nishojib/ffxivdailies/internal/task"
+	"github.com/nishojib/ffxivdailies/internal/user"
 )
 
 // Server represents an HTTP server.
 type Server struct {
-	*http.Server
-	wg sync.WaitGroup
+	srv      *http.Server
+	db       Repository
+	provider Provider
+	wg       sync.WaitGroup
+
+	cfg Config
+}
+
+type Config struct {
+	Limiter    api.Limiter
+	Env        api.Environment
+	Version    string
+	AuthSecret string
 }
 
 // New creates a new server with the provided option.Options.
-func New(
-	db *bun.DB,
-	limiter api.Limiter,
-	env api.Environment,
-	version string,
-	authSecret string,
-	opts ...options.Option[Server],
-) *Server {
+func New(db Repository, provider Provider, cfg Config) *Server {
 	s := &Server{
-		Server: &http.Server{
-			Addr:         ":8080",
-			Handler:      NewRoutes(db, limiter, env, version, authSecret),
-			IdleTimeout:  1 * time.Minute,
-			ReadTimeout:  5 * time.Second,
-			WriteTimeout: 10 * time.Second,
-			ErrorLog:     slog.NewLogLogger(slog.Default().Handler(), slog.LevelError),
-		},
+		db:       db,
+		provider: provider,
+		cfg:      cfg,
 	}
 
-	return s.Append(opts...)
+	s.srv = &http.Server{
+		Handler:      s.RegisterRoutes(),
+		IdleTimeout:  1 * time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		ErrorLog:     slog.NewLogLogger(slog.Default().Handler(), slog.LevelError),
+	}
+
+	return s
 }
 
 // Serve starts the server and blocks until the server is stopped.
-func (s *Server) Serve(env api.Environment) error {
+func (s *Server) ListenAndServe(port int) error {
+	const addr = "127.0.0.1"
+
 	shutdownError := make(chan error, 1)
 
 	go func() {
@@ -60,20 +70,19 @@ func (s *Server) Serve(env api.Environment) error {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
-		err := s.Shutdown(ctx)
+		err := s.srv.Shutdown(ctx)
 		if err != nil {
 			shutdownError <- err
 		}
 
-		slog.Info("completing background tasks", "addr", s.Addr)
+		slog.Info("completing background tasks", "addr", s.srv.Addr)
 
 		s.wg.Wait()
 		shutdownError <- nil
 	}()
 
-	slog.Info("starting server", "addr", s.Addr, "env", env.String())
-
-	err := s.ListenAndServe()
+	s.srv.Addr = fmt.Sprintf("%s:%d", addr, port)
+	err := s.srv.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
@@ -83,10 +92,8 @@ func (s *Server) Serve(env api.Environment) error {
 		return err
 	}
 
-	slog.Info("stopped server", "addr", s.Addr)
-
+	slog.Info("stopped server", "addr", s.srv.Addr)
 	return nil
-
 }
 
 // Append applies the provided option.Options to the server.
@@ -98,9 +105,18 @@ func (s *Server) Append(opts ...options.Option[Server]) *Server {
 	return s
 }
 
-// WithPort sets the address for the server.
-func WithPort(port string) options.Option[Server] {
-	return options.OptionFunc[Server](func(s *Server) {
-		s.Server.Addr = fmt.Sprintf(":%s", port)
-	})
+type Repository interface {
+	GetUserByProviderID(ctx context.Context, providerAccountID string) (user.User, error)
+	InsertAndLinkAccount(ctx context.Context, user *user.User, account *user.Account) error
+
+	IsTokenRevoked(ctx context.Context, token string) (bool, error)
+	RevokeToken(ctx context.Context, token string) error
+
+	GetTasksByKind(ctx context.Context, kind string) ([]task.Task, error)
+	GetTaskByID(ctx context.Context, taskID string) (task.Task, error)
+	ToggleTask(ctx context.Context, task *task.Task) error
+}
+
+type Provider interface {
+	Validate(provider string, token string) (string, bool, error)
 }

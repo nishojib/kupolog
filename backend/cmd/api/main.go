@@ -6,12 +6,15 @@ import (
 	"flag"
 	"log/slog"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/nishojib/ffxivdailies/docs"
 	"github.com/nishojib/ffxivdailies/internal/api"
+	"github.com/nishojib/ffxivdailies/internal/provider"
+	"github.com/nishojib/ffxivdailies/internal/repository"
 	"github.com/nishojib/ffxivdailies/internal/server"
 	"github.com/nishojib/ffxivdailies/internal/vcs"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
@@ -20,16 +23,7 @@ import (
 	"github.com/uptrace/bun/extra/bundebug"
 )
 
-type config struct {
-	port       string
-	db         db
-	env        api.Environment
-	limiter    api.Limiter
-	version    string
-	authSecret string
-}
-
-type db struct {
+type dbConfig struct {
 	dsn          string
 	maxOpenConns int
 	maxIdleConns int
@@ -78,67 +72,71 @@ func main() {
 
 	docs.SwaggerInfo.Host = os.Getenv("API_URL")
 
-	cfg := config{
-		env:        env,
-		port:       os.Getenv("PORT"),
-		db:         db{dsn: os.Getenv("DB_DSN")},
-		version:    vcs.Version(),
-		authSecret: os.Getenv("AUTH_SECRET"),
-	}
+	var dbCfg dbConfig
 
-	flag.IntVar(&cfg.db.maxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")
-	flag.IntVar(&cfg.db.maxIdleConns, "db-max-idle-conns", 25, "PostgreSQL max idle connections")
+	dbCfg.dsn = os.Getenv("DB_DSN")
+
+	flag.IntVar(&dbCfg.maxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")
+	flag.IntVar(&dbCfg.maxIdleConns, "db-max-idle-conns", 25, "PostgreSQL max idle connections")
 	flag.DurationVar(
-		&cfg.db.maxIdleTime,
+		&dbCfg.maxIdleTime,
 		"db-max-idle-time",
 		15*time.Minute,
 		"PostgreSQL max connection idle time",
 	)
-	flag.IntVar(&cfg.limiter.RPS, "limiter-rps", 100, "Rate limiter requests per second")
-	flag.BoolVar(&cfg.limiter.Enabled, "limiter-enabled", true, "Enable rate limiter")
+
+	var limiter api.Limiter
+	flag.IntVar(&limiter.RPS, "limiter-rps", 100, "Rate limiter requests per second")
+	flag.BoolVar(&limiter.Enabled, "limiter-enabled", true, "Enable rate limiter")
 
 	flag.Parse()
 
-	if err := cfg.run(); err != nil {
+	db, err := initDB(dbCfg, env)
+	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
-}
 
-func (cfg *config) run() error {
-	db, err := cfg.initDB()
-	if err != nil {
-		return err
-	}
+	port, err := strconv.Atoi(os.Getenv("PORT"))
 
 	s := server.New(
-		db,
-		cfg.limiter,
-		cfg.env,
-		cfg.version,
-		cfg.authSecret,
-		server.WithPort(cfg.port),
+		repository.New(db),
+		provider.New(),
+		server.Config{
+			Limiter:    limiter,
+			Env:        env,
+			Version:    vcs.Version(),
+			AuthSecret: os.Getenv("AUTH_SECRET"),
+		},
 	)
 
-	if err := s.Serve(cfg.env); err != nil {
-		return nil
+	slog.Info("starting server", "addr", port, "env", env.String())
+
+	if err != nil {
+		slog.Error("failed to parse port", "error", err)
+		os.Exit(1)
 	}
 
-	return nil
+	err = s.ListenAndServe(port)
+	if err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+
 }
 
-func (cfg *config) initDB() (*bun.DB, error) {
+func initDB(dbCfg dbConfig, env api.Environment) (*bun.DB, error) {
 	dsn := strings.Split(os.Getenv("DB_DSN"), "?")[0]
 	slog.Info("connecting to db...", "dsn", dsn)
 
-	sqldb, err := sql.Open("libsql", cfg.db.dsn)
+	sqldb, err := sql.Open("libsql", dbCfg.dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	sqldb.SetMaxOpenConns(cfg.db.maxOpenConns)
-	sqldb.SetMaxIdleConns(cfg.db.maxIdleConns)
-	sqldb.SetConnMaxIdleTime(cfg.db.maxIdleTime)
+	sqldb.SetMaxOpenConns(dbCfg.maxOpenConns)
+	sqldb.SetMaxIdleConns(dbCfg.maxIdleConns)
+	sqldb.SetConnMaxIdleTime(dbCfg.maxIdleTime)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -150,10 +148,10 @@ func (cfg *config) initDB() (*bun.DB, error) {
 
 	slog.Info("connected to db...")
 
-	db := bun.NewDB(sqldb, sqlitedialect.New())
-	if cfg.env == api.EnvDevelopment {
-		db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
+	bunDB := bun.NewDB(sqldb, sqlitedialect.New())
+	if env == api.EnvDevelopment {
+		bunDB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
 
-	return db, nil
+	return bunDB, nil
 }

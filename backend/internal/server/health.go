@@ -1,4 +1,4 @@
-package handlers
+package server
 
 import (
 	"net/http"
@@ -30,19 +30,17 @@ type ServerInfo struct {
 //	@Success		200	{object}	ServerStatus
 //	@Failure		500	{object}	problem.Problem
 //	@Router			/health [get]
-func Health(env api.Environment, version string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		data := ServerStatus{
-			Status: "available",
-			SystemInfo: ServerInfo{
-				Environment: env.String(),
-				Version:     version,
-			},
-		}
+func (s *Server) HealthHandler(w http.ResponseWriter, r *http.Request) {
+	data := ServerStatus{
+		Status: "available",
+		SystemInfo: ServerInfo{
+			Environment: s.cfg.Env.String(),
+			Version:     s.cfg.Version,
+		},
+	}
 
-		err := api.WriteJSON(w, http.StatusOK, data, nil)
-		if err != nil {
-			api.ServerErrorResponse(w, r, err)
-		}
+	err := api.WriteJSON(w, http.StatusOK, data, nil)
+	if err != nil {
+		api.ServerErrorResponse(w, r, err)
 	}
 }

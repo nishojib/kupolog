@@ -9,23 +9,15 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httprate"
 	"github.com/nishojib/ffxivdailies/internal/api"
-	"github.com/nishojib/ffxivdailies/internal/server/handlers"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
-	"github.com/uptrace/bun"
 )
 
-// NewRoutes returns a new http.Handler that routes requests to the correct handler.
-func NewRoutes(
-	db *bun.DB,
-	limiter api.Limiter,
-	env api.Environment,
-	version string,
-	authSecret string,
-) http.Handler {
+// RegisterRoutes returns a new http.Handler that routes requests to the correct handler.
+func (s *Server) RegisterRoutes() http.Handler {
 	router := chi.NewRouter()
 
-	if limiter.Enabled {
-		router.Use(httprate.LimitByIP(limiter.RPS, 1*time.Minute))
+	if s.cfg.Limiter.Enabled {
+		router.Use(httprate.LimitByIP(s.cfg.Limiter.RPS, 1*time.Minute))
 	}
 
 	router.Use(middleware.Logger, middleware.Recoverer, cors.Handler(cors.Options{
@@ -43,15 +35,14 @@ func NewRoutes(
 
 	router.Route("/v1", func(v1Router chi.Router) {
 		v1Router.Mount("/swagger", httpSwagger.WrapHandler)
-		v1Router.Get("/health", handlers.Health(env, version))
-		v1Router.Post("/auth/login", handlers.Login(db, authSecret))
-		v1Router.Post("/auth/refresh", handlers.RefreshToken(db, authSecret))
-		v1Router.Post("/auth/revoke", handlers.RevokeToken(db))
+		v1Router.Get("/health", s.HealthHandler)
+		v1Router.Post("/auth/login", s.LoginHandler)
+		v1Router.Post("/auth/refresh", s.RefreshTokenHandler)
+		v1Router.Post("/auth/revoke", s.RevokeTokenHandler)
 
-		v1Router.Get("/dailies/weekly", handlers.Weeklies(db))
-		v1Router.Get("/dailies/daily", handlers.Dailies(db))
-		v1Router.Put("/dailies/tasks/{taskID}", handlers.ToggleTask(db))
-		v1Router.Put("/dailies/subtasks/{subtaskID}", handlers.ToggleSubtask(db))
+		v1Router.Get("/dailies/weekly", s.WeekliesHandler)
+		v1Router.Get("/dailies/daily", s.DailiesHandler)
+		v1Router.Put("/dailies/tasks/{taskID}", s.ToggleTaskHandler)
 	})
 
 	return router
