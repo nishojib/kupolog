@@ -1,4 +1,4 @@
-package models
+package task
 
 import (
 	"database/sql"
@@ -9,17 +9,16 @@ import (
 
 // Task represents a task in the database.
 type Task struct {
-	ID          int64          `json:"-"                  bun:"id,pk,autoincrement"`
+	ID          int64          `json:"-"           bun:"id,pk,autoincrement"`
 	TaskID      string         `json:"taskID"`
 	Title       string         `json:"title"`
 	Completed   bool           `json:"completed"`
 	ContentType string         `json:"contentType"`
 	Kind        string         `json:"kind"`
 	IsHidden    bool           `json:"isHidden"`
-	CreatedAt   time.Time      `json:"createdAt"          bun:",default:current_timestamp"`
+	CreatedAt   time.Time      `json:"createdAt"   bun:",default:current_timestamp"`
 	Version     int64          `json:"-"`
 	CreatorID   sql.NullString `json:"-"`
-	Subtasks    []*Subtask     `json:"subtasks,omitempty" bun:"rel:has-many,join:task_id=task_id"`
 }
 
 func (t *Task) Validate(v *validator.Validator) {
