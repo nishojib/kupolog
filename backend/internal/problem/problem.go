@@ -23,6 +23,10 @@ func (p Problem) JSON() []byte {
 	return b
 }
 
+func (p Problem) Problem() Problem {
+	return p
+}
+
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (p Problem) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, &p.data)
