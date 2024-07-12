@@ -40,9 +40,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		v1Router.Post("/auth/refresh", s.RefreshTokenHandler)
 		v1Router.Post("/auth/revoke", s.RevokeTokenHandler)
 
-		v1Router.Get("/dailies/weekly", s.WeekliesHandler)
-		v1Router.Get("/dailies/daily", s.DailiesHandler)
-		v1Router.Put("/dailies/tasks/{taskID}", s.ToggleTaskHandler)
+		v1Router.Get("/tasks/shared", s.SharedTasksHandler)
 	})
 
 	return router

@@ -69,8 +69,6 @@ github.com/tursodatabase/libsql-client-go v0.0.0-20240416075003-747366ff79c4 h1:
 github.com/tursodatabase/libsql-client-go v0.0.0-20240416075003-747366ff79c4/go.mod h1:2Fu26tjM011BLeR5+jwTfs6DX/fNMEWV/3CBZvggrA4=
 github.com/uptrace/bun v1.2.1 h1:2ENAcfeCfaY5+2e7z5pXrzFKy3vS8VXvkCag6N2Yzfk=
 github.com/uptrace/bun v1.2.1/go.mod h1:cNg+pWBUMmJ8rHnETgf65CEvn3aIKErrwOD6IA8e+Ec=
-github.com/uptrace/bun/dbfixture v1.2.1 h1:2fWQWdSVzIrVcGpJzLqefVIvHPuxjK5rrrzYOVGmSFg=
-github.com/uptrace/bun/dbfixture v1.2.1/go.mod h1:Fkzb40y+tOBzZoDRpxIvrwvuZ6bHYppqnRRWHSjRqBY=
 github.com/uptrace/bun/dialect/sqlitedialect v1.2.1 h1:IprvkIKUjEjvt4VKpcmLpbMIucjrsmUPJOSlg19+a0Q=
 github.com/uptrace/bun/dialect/sqlitedialect v1.2.1/go.mod h1:mMQf4NUpgY8bnOanxGmxNiHCdALOggS4cZ3v63a9D/o=
 github.com/uptrace/bun/extra/bundebug v1.2.1 h1:85MYpX3QESYI02YerKxUi1CD9mHuLrc2BXs1eOCtQus=

@@ -14,7 +14,6 @@ import (
 
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/options"
-	"github.com/nishojib/ffxivdailies/internal/task"
 	"github.com/nishojib/ffxivdailies/internal/user"
 )
 
@@ -111,10 +110,6 @@ type Repository interface {
 
 	IsTokenRevoked(ctx context.Context, token string) (bool, error)
 	RevokeToken(ctx context.Context, token string) error
-
-	GetTasksByKind(ctx context.Context, kind string) ([]task.Task, error)
-	GetTaskByID(ctx context.Context, taskID string) (task.Task, error)
-	ToggleTask(ctx context.Context, task *task.Task) error
 }
 
 type Provider interface {

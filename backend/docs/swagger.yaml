@@ -58,18 +58,19 @@ definitions:
         - $ref: '#/definitions/server.ServerInfo'
         description: SystemInfo contains information about the system
     type: object
-  task.Task:
+  server.SharedTaskResponse:
     properties:
-      completed:
-        type: boolean
-      contentType:
-        type: string
-      createdAt:
-        type: string
-      isHidden:
-        type: boolean
-      kind:
-        type: string
+      dailies:
+        items:
+          $ref: '#/definitions/server.TaskResponse'
+        type: array
+      weeklies:
+        items:
+          $ref: '#/definitions/server.TaskResponse'
+        type: array
+    type: object
+  server.TaskResponse:
+    properties:
       taskID:
         type: string
       title:
@@ -267,144 +268,6 @@ paths:
       summary: revoke token
       tags:
       - auth
-  /dailies/daily:
-    get:
-      description: Get the daily tasks
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            properties:
-              dailies:
-                items:
-                  $ref: '#/definitions/task.Task'
-                type: array
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-      summary: Daily tasks
-      tags:
-      - dailies
-  /dailies/tasks/{taskID}:
-    put:
-      consumes:
-      - application/json
-      description: Toggle the task
-      parameters:
-      - description: Task ID
-        in: path
-        name: taskID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            properties:
-              task:
-                $ref: '#/definitions/task.Task'
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-      summary: Toggle task
-      tags:
-      - dailies
-  /dailies/weekly:
-    get:
-      description: Get the weekly tasks
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            properties:
-              weeklies:
-                items:
-                  $ref: '#/definitions/task.Task'
-                type: array
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            properties:
-              detail:
-                type: string
-              status:
-                type: integer
-              title:
-                type: string
-              type:
-                type: string
-            type: object
-      summary: Weekly tasks
-      tags:
-      - dailies
   /health:
     get:
       description: Checks the health of the service
@@ -422,6 +285,38 @@ paths:
       summary: Health check
       tags:
       - health
+  /tasks/shared:
+    get:
+      description: Get the shared tasks
+      parameters:
+      - description: Kind of tasks to return
+        in: query
+        name: kind
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.SharedTaskResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: Shared tasks
+      tags:
+      - tasks
 securityDefinitions:
   Bearer:
     description: '"Type ''Bearer TOKEN'' to correctly set the API Key"'

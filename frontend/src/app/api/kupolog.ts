@@ -9,46 +9,26 @@
  * ---------------------------------------------------------------
  */
 
-export interface HandlersAccountRequest {
+export type ProblemProblem = object;
+
+export interface ServerAccountRequest {
   access_token?: string;
   expires_at?: number;
   provider?: string;
   provider_account_id?: string;
 }
 
-export interface HandlersServerInfo {
-  environment?: string;
-  version?: string;
+export interface ServerLoginResponse {
+  token?: ServerLoginTokenResponse;
+  user?: ServerLoginUserResponse;
 }
 
-/** Response for the health check */
-export interface HandlersServerStatus {
-  /** Status is the health status of the service */
-  status?: string;
-  /** SystemInfo contains information about the system */
-  system_info?: HandlersServerInfo;
+export interface ServerLoginTokenResponse {
+  access_token?: string;
+  refresh_token?: string;
 }
 
-export interface ModelsSubtask {
-  completed?: boolean;
-  createdAt?: string;
-  isHidden?: boolean;
-  subtaskID?: string;
-  title?: string;
-}
-
-export interface ModelsTask {
-  completed?: boolean;
-  contentType?: string;
-  createdAt?: string;
-  isHidden?: boolean;
-  kind?: string;
-  subtasks?: ModelsSubtask[];
-  taskID?: string;
-  title?: string;
-}
-
-export interface ModelsUser {
+export interface ServerLoginUserResponse {
   createdAt?: string;
   email?: string;
   image?: string;
@@ -56,7 +36,28 @@ export interface ModelsUser {
   userID?: string;
 }
 
-export type ProblemProblem = object;
+export interface ServerServerInfo {
+  environment?: string;
+  version?: string;
+}
+
+/** Response for the health check */
+export interface ServerServerStatus {
+  /** Status is the health status of the service */
+  status?: string;
+  /** SystemInfo contains information about the system */
+  system_info?: ServerServerInfo;
+}
+
+export interface ServerSharedTaskResponse {
+  dailies?: ServerTaskResponse[];
+  weeklies?: ServerTaskResponse[];
+}
+
+export interface ServerTaskResponse {
+  taskID?: string;
+  title?: string;
+}
 
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from "axios";
 import axios from "axios";
@@ -213,15 +214,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary login
      * @request POST:/auth/login
      */
-    loginCreate: (request: HandlersAccountRequest, params: RequestParams = {}) =>
+    loginCreate: (request: ServerAccountRequest, params: RequestParams = {}) =>
       this.request<
-        {
-          token?: {
-            access_token?: string;
-            refresh_token?: string;
-          };
-          user?: ModelsUser;
-        },
+        ServerLoginResponse,
         {
           detail?: string;
           status?: number;
@@ -292,113 +287,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
-  dailies = {
-    /**
-     * @description Get the daily tasks
-     *
-     * @tags dailies
-     * @name DailyList
-     * @summary Daily tasks
-     * @request GET:/dailies/daily
-     */
-    dailyList: (params: RequestParams = {}) =>
-      this.request<
-        {
-          dailies?: ModelsTask[];
-        },
-        {
-          detail?: string;
-          status?: number;
-          title?: string;
-          type?: string;
-        }
-      >({
-        path: `/dailies/daily`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Toggle the subtask
-     *
-     * @tags dailies
-     * @name SubtasksUpdate
-     * @summary Toggle subtask
-     * @request PUT:/dailies/subtasks/{subtaskID}
-     */
-    subtasksUpdate: (subtaskId: string, params: RequestParams = {}) =>
-      this.request<
-        {
-          task?: ModelsSubtask;
-        },
-        {
-          detail?: string;
-          status?: number;
-          title?: string;
-          type?: string;
-        }
-      >({
-        path: `/dailies/subtasks/${subtaskId}`,
-        method: "PUT",
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Toggle the task
-     *
-     * @tags dailies
-     * @name TasksUpdate
-     * @summary Toggle task
-     * @request PUT:/dailies/tasks/{taskID}
-     */
-    tasksUpdate: (taskId: string, params: RequestParams = {}) =>
-      this.request<
-        {
-          task?: ModelsTask;
-        },
-        {
-          detail?: string;
-          status?: number;
-          title?: string;
-          type?: string;
-        }
-      >({
-        path: `/dailies/tasks/${taskId}`,
-        method: "PUT",
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Get the weekly tasks
-     *
-     * @tags dailies
-     * @name WeeklyList
-     * @summary Weekly tasks
-     * @request GET:/dailies/weekly
-     */
-    weeklyList: (params: RequestParams = {}) =>
-      this.request<
-        {
-          weeklies?: ModelsTask[];
-        },
-        {
-          detail?: string;
-          status?: number;
-          title?: string;
-          type?: string;
-        }
-      >({
-        path: `/dailies/weekly`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-  };
   health = {
     /**
      * @description Checks the health of the service
@@ -409,9 +297,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/health
      */
     healthList: (params: RequestParams = {}) =>
-      this.request<HandlersServerStatus, ProblemProblem>({
+      this.request<ServerServerStatus, ProblemProblem>({
         path: `/health`,
         method: "GET",
+        format: "json",
+        ...params,
+      }),
+  };
+  tasks = {
+    /**
+     * @description Get the shared tasks
+     *
+     * @tags tasks
+     * @name SharedList
+     * @summary Shared tasks
+     * @request GET:/tasks/shared
+     */
+    sharedList: (
+      query: {
+        /** Kind of tasks to return */
+        kind: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ServerSharedTaskResponse,
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/tasks/shared`,
+        method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),

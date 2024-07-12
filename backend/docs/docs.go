@@ -296,219 +296,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/dailies/daily": {
-            "get": {
-                "description": "Get the daily tasks",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "dailies"
-                ],
-                "summary": "Daily tasks",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "dailies": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/definitions/task.Task"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "detail": {
-                                    "type": "string"
-                                },
-                                "status": {
-                                    "type": "integer"
-                                },
-                                "title": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "detail": {
-                                    "type": "string"
-                                },
-                                "status": {
-                                    "type": "integer"
-                                },
-                                "title": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/dailies/tasks/{taskID}": {
-            "put": {
-                "description": "Toggle the task",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "dailies"
-                ],
-                "summary": "Toggle task",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Task ID",
-                        "name": "taskID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "task": {
-                                    "$ref": "#/definitions/task.Task"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "detail": {
-                                    "type": "string"
-                                },
-                                "status": {
-                                    "type": "integer"
-                                },
-                                "title": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "detail": {
-                                    "type": "string"
-                                },
-                                "status": {
-                                    "type": "integer"
-                                },
-                                "title": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/dailies/weekly": {
-            "get": {
-                "description": "Get the weekly tasks",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "dailies"
-                ],
-                "summary": "Weekly tasks",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "weeklies": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/definitions/task.Task"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "detail": {
-                                    "type": "string"
-                                },
-                                "status": {
-                                    "type": "integer"
-                                },
-                                "title": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "detail": {
-                                    "type": "string"
-                                },
-                                "status": {
-                                    "type": "integer"
-                                },
-                                "title": {
-                                    "type": "string"
-                                },
-                                "type": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/health": {
             "get": {
                 "description": "Checks the health of the service",
@@ -530,6 +317,55 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/problem.Problem"
+                        }
+                    }
+                }
+            }
+        },
+        "/tasks/shared": {
+            "get": {
+                "description": "Get the shared tasks",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Shared tasks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kind of tasks to return",
+                        "name": "kind",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.SharedTaskResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "detail": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "integer"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -628,24 +464,26 @@ const docTemplate = `{
                 }
             }
         },
-        "task.Task": {
+        "server.SharedTaskResponse": {
             "type": "object",
             "properties": {
-                "completed": {
-                    "type": "boolean"
+                "dailies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.TaskResponse"
+                    }
                 },
-                "contentType": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "isHidden": {
-                    "type": "boolean"
-                },
-                "kind": {
-                    "type": "string"
-                },
+                "weeklies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.TaskResponse"
+                    }
+                }
+            }
+        },
+        "server.TaskResponse": {
+            "type": "object",
+            "properties": {
                 "taskID": {
                     "type": "string"
                 },
