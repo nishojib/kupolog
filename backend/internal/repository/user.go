@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"strings"
 
 	repoErrors "github.com/nishojib/ffxivdailies/internal/errors"
@@ -38,8 +37,6 @@ func (r *Repository) InsertAndLinkAccount(
 			}
 
 			account.UserID = user.ID
-
-			fmt.Printf("%+v\n", account)
 
 			_, err = tx.NewInsert().Model(account).Exec(ctx)
 			if err != nil {

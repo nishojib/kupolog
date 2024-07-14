@@ -2,10 +2,10 @@ package user
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"time"
 
+	repoErrors "github.com/nishojib/ffxivdailies/internal/errors"
 	"github.com/nrednav/cuid2"
 )
 
@@ -21,7 +21,7 @@ func GetOrCreate(
 
 	user, err := db.GetUserByProviderID(dbCtx, string(accountID))
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, repoErrors.ErrRecordNotFound) {
 			user = User{
 				Name:   "Warrior of Light",
 				Email:  email,

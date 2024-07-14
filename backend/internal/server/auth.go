@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -58,11 +59,13 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// get the account info
 	var a AccountRequest
 	if err := api.ReadJSON(w, r, &a); err != nil {
+		slog.Error("failed to read json", "error", err)
 		api.BadRequestResponse(w, r, err)
 		return
 	}
 
 	if int64(a.ExpiresAt) < time.Now().Unix() {
+		slog.Error("access token expired")
 		api.InvalidAccessTokenResponse(w, r)
 		return
 	}
@@ -74,11 +77,13 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	email, isAuthorized, err = s.provider.Validate(a.Provider, a.AccessToken)
 	if err != nil {
+		slog.Error("failed to validate access token", "error", err)
 		api.InvalidAccessTokenResponse(w, r)
 		return
 	}
 
 	if !isAuthorized {
+		slog.Error("access token is not authorized")
 		api.InvalidAccessTokenResponse(w, r)
 		return
 	}
