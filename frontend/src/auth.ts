@@ -8,6 +8,7 @@ import { kupologApi } from '@/app/api';
 
 declare module 'next-auth' {
   interface Session {
+    accessToken?: string;
     error?: 'RefreshAccessTokenError';
   }
 }
@@ -85,10 +86,9 @@ const authOptions = {
           image: token.user.image,
           emailVerified: null,
         };
-      }
 
-      kupologApi.instance.defaults.headers.common['Authorization'] =
-        `Bearer ${token.access_token}`;
+        session.accessToken = token.access_token;
+      }
 
       return session;
     },

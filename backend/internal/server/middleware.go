@@ -13,25 +13,27 @@ func (s *Server) withAuthentication(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authToken, err := auth.GetBearerToken(r.Header)
 		if err != nil {
+			slog.Error("failed to get bearer token", "error", err)
 			api.AuthenticationRequiredResponse(w, r)
 			return
 		}
 
-		slog.Info("validating token", "token", authToken)
-
 		userID, err := auth.Validate(authToken, s.cfg.AuthSecret)
 		if err != nil {
+			slog.Error("failed to validate token", "error", err)
 			api.InvalidAccessTokenResponse(w, r)
 			return
 		}
 
 		if userID == "" {
+			slog.Error("user id is empty")
 			api.InvalidAccessTokenResponse(w, r)
 			return
 		}
 
 		user, err := s.db.GetUserByUserID(r.Context(), userID)
 		if err != nil {
+			slog.Error("failed to get user", "error", err)
 			api.InvalidAccessTokenResponse(w, r)
 			return
 		}

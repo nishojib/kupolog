@@ -20,6 +20,7 @@ export function TaskCard({
     <div
       className={cn(
         'bg-card text-card-foreground cursor-pointer rounded-xl border shadow',
+        { 'bg-muted border-muted shadow-none': task.completed },
       )}
     >
       <div className="flex items-center justify-between space-x-4 px-4">
@@ -41,6 +42,7 @@ export function TaskCard({
             htmlFor={`task-${task.taskID?.toString()}`}
             className={cn(
               'cursor-pointer select-none leading-none tracking-tight',
+              { 'text-muted-foreground line-through': task.completed },
             )}
           >
             {task.title}
