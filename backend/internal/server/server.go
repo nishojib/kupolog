@@ -14,6 +14,7 @@ import (
 
 	"github.com/nishojib/ffxivdailies/internal/api"
 	"github.com/nishojib/ffxivdailies/internal/options"
+	"github.com/nishojib/ffxivdailies/internal/task"
 	"github.com/nishojib/ffxivdailies/internal/user"
 )
 
@@ -106,10 +107,15 @@ func (s *Server) Append(opts ...options.Option[Server]) *Server {
 
 type Repository interface {
 	GetUserByProviderID(ctx context.Context, providerAccountID string) (user.User, error)
-	InsertAndLinkAccount(ctx context.Context, user *user.User, account *user.Account) error
+	InsertAndLinkAccount(ctx context.Context, u *user.User, account *user.Account) error
 
 	IsTokenRevoked(ctx context.Context, token string) (bool, error)
 	RevokeToken(ctx context.Context, token string) error
+
+	AddUserTask(ctx context.Context, t *task.Task) error
+	UpdateUserTask(ctx context.Context, t *task.Task) error
+	GetUserTask(ctx context.Context, userID string, taskID string) (task.Task, error)
+	GetTasksForUser(ctx context.Context, userID string) ([]task.Task, error)
 }
 
 type Provider interface {

@@ -71,9 +71,22 @@ definitions:
     type: object
   server.TaskResponse:
     properties:
+      completed:
+        type: boolean
+      hidden:
+        type: boolean
       taskID:
         type: string
       title:
+        type: string
+    type: object
+  server.ToggleTaskRequest:
+    properties:
+      hasCompleted:
+        type: boolean
+      hasHidden:
+        type: boolean
+      userID:
         type: string
     type: object
 externalDocs:
@@ -315,6 +328,55 @@ paths:
                 type: string
             type: object
       summary: Shared tasks
+      tags:
+      - tasks
+  /tasks/shared/{taskID}:
+    put:
+      description: toggle a task of the current user
+      parameters:
+      - description: request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/server.ToggleTaskRequest'
+      - description: Task ID
+        in: path
+        name: taskID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: Toggle Task
       tags:
       - tasks
 securityDefinitions:

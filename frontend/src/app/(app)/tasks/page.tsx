@@ -1,9 +1,13 @@
-import { getTasks } from '@/actions/tasks';
+import { revalidatePath } from 'next/cache';
+
+import { getTasks, toggleComplete } from '@/actions/tasks';
+import { auth } from '@/auth';
 import { TaskCard } from '@/components/task';
 import { DailyTimer, WeeklyTimer } from '@/components/timer';
 
 export default async function Page() {
   const tasks = await getTasks();
+  const session = await auth();
 
   return (
     <div className="container">
@@ -17,7 +21,20 @@ export default async function Page() {
           </div>
           <ul className="space-y-4">
             {tasks?.weeklies?.map((task) => (
-              <TaskCard key={task.taskID} task={task} />
+              <TaskCard
+                key={task.taskID}
+                task={task}
+                updateTask={async (taskID) => {
+                  'use server';
+
+                  if (!session?.user?.id) {
+                    return;
+                  }
+
+                  await toggleComplete(taskID, session?.user?.id);
+                  revalidatePath('/tasks');
+                }}
+              />
             ))}
           </ul>
         </div>
@@ -30,7 +47,20 @@ export default async function Page() {
           </div>
           <ul className="space-y-4">
             {tasks?.dailies?.map((task) => (
-              <TaskCard key={task.taskID} task={task} />
+              <TaskCard
+                key={task.taskID}
+                task={task}
+                updateTask={async (taskID) => {
+                  'use server';
+
+                  if (!session?.user?.id) {
+                    return;
+                  }
+
+                  await toggleComplete(taskID, session?.user?.id);
+                  revalidatePath('/tasks');
+                }}
+              />
             ))}
           </ul>
         </div>

@@ -363,6 +363,81 @@
                     }
                 }
             }
+        },
+        "/tasks/shared/{taskID}": {
+            "put": {
+                "description": "toggle a task of the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Toggle Task",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.ToggleTaskRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "taskID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "detail": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "integer"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "detail": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "integer"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -477,10 +552,30 @@
         "server.TaskResponse": {
             "type": "object",
             "properties": {
+                "completed": {
+                    "type": "boolean"
+                },
+                "hidden": {
+                    "type": "boolean"
+                },
                 "taskID": {
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.ToggleTaskRequest": {
+            "type": "object",
+            "properties": {
+                "hasCompleted": {
+                    "type": "boolean"
+                },
+                "hasHidden": {
+                    "type": "boolean"
+                },
+                "userID": {
                     "type": "string"
                 }
             }

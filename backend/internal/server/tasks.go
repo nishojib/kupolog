@@ -1,15 +1,13 @@
 package server
 
 import (
-	"embed"
-	"encoding/json"
+	"log/slog"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/nishojib/ffxivdailies/internal/api"
+	"github.com/nishojib/ffxivdailies/internal/task"
 )
-
-//go:embed tasks.json
-var f embed.FS
 
 // SharedTaskResponse represents the response for the shared tasks endpoint.
 type SharedTaskResponse struct {
@@ -19,50 +17,43 @@ type SharedTaskResponse struct {
 
 // TaskResponse describes a task.
 type TaskResponse struct {
-	TaskID string `json:"taskID"`
-	Title  string `json:"title"`
+	TaskID    string `json:"taskID"`
+	Title     string `json:"title"`
+	Completed bool   `json:"completed"`
+	Hidden    bool   `json:"hidden"`
 }
 
-// Weeklies godoc
+// SharedTasksHandler godoc
 //
 //	@Summary		Shared tasks
 //	@Description	Get the shared tasks
 //	@Tags			tasks
 //	@Produce		json
 //	@Param			kind	query		string	true	"Kind of tasks to return"
-//	@Success		200	{object}	SharedTaskResponse
-//	@Failure		500	{object}	object{detail=string,status=int,title=string,type=string}
+//	@Success		200		{object}	SharedTaskResponse
+//	@Failure		500		{object}	object{detail=string,status=int,title=string,type=string}
 //	@Router			/tasks/shared [get]
 func (s *Server) SharedTasksHandler(w http.ResponseWriter, r *http.Request) {
-	var input struct {
-		Weeklies []struct {
-			TaskID string `json:"taskID"`
-			Title  string `json:"title"`
-		} `json:"weeklies"`
-		Dailies []struct {
-			TaskID string `json:"taskID"`
-			Title  string `json:"title"`
-		} `json:"dailies"`
-	}
-
-	buf, err := f.ReadFile("tasks.json")
+	input, err := task.GetTasks(r.Context(), s.db, "zz54ewgaijg1majlfxb63e6q")
 	if err != nil {
 		api.ServerErrorResponse(w, r, err)
 		return
 	}
 
-	err = json.Unmarshal(buf, &input)
-	if err != nil {
-		api.ServerErrorResponse(w, r, err)
-		return
-	}
+	slog.Info("weeklies", "len", len(input.Weeklies))
+	slog.Info("dailies", "len", len(input.Dailies))
 
 	kind := r.URL.Query().Get("kind")
 
 	var tasks []TaskResponse
 	if kind == "weekly" {
 		for _, task := range input.Weeklies {
-			tasks = append(tasks, TaskResponse{TaskID: task.TaskID, Title: task.Title})
+			tasks = append(tasks, TaskResponse{
+				TaskID:    string(task.TaskID),
+				Title:     task.Title,
+				Completed: bool(task.Completed),
+				Hidden:    bool(task.Hidden),
+			})
 		}
 		err = api.WriteJSON(w, http.StatusOK, SharedTaskResponse{Weeklies: tasks}, nil)
 		if err != nil {
@@ -71,7 +62,12 @@ func (s *Server) SharedTasksHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if kind == "daily" {
 		for _, task := range input.Dailies {
-			tasks = append(tasks, TaskResponse{TaskID: task.TaskID, Title: task.Title})
+			tasks = append(tasks, TaskResponse{
+				TaskID:    string(task.TaskID),
+				Title:     task.Title,
+				Completed: bool(task.Completed),
+				Hidden:    bool(task.Hidden),
+			})
 		}
 
 		err = api.WriteJSON(w, http.StatusOK, SharedTaskResponse{Dailies: tasks}, nil)
@@ -84,11 +80,21 @@ func (s *Server) SharedTasksHandler(w http.ResponseWriter, r *http.Request) {
 		dailyTasks := []TaskResponse{}
 
 		for _, task := range input.Weeklies {
-			weeklyTasks = append(weeklyTasks, TaskResponse{TaskID: task.TaskID, Title: task.Title})
+			weeklyTasks = append(weeklyTasks, TaskResponse{
+				TaskID:    string(task.TaskID),
+				Title:     task.Title,
+				Completed: bool(task.Completed),
+				Hidden:    bool(task.Hidden),
+			})
 		}
 
 		for _, task := range input.Dailies {
-			dailyTasks = append(dailyTasks, TaskResponse{TaskID: task.TaskID, Title: task.Title})
+			dailyTasks = append(dailyTasks, TaskResponse{
+				TaskID:    string(task.TaskID),
+				Title:     task.Title,
+				Completed: bool(task.Completed),
+				Hidden:    bool(task.Hidden),
+			})
 		}
 		err = api.WriteJSON(w, http.StatusOK, SharedTaskResponse{
 			Weeklies: weeklyTasks,
@@ -98,5 +104,45 @@ func (s *Server) SharedTasksHandler(w http.ResponseWriter, r *http.Request) {
 			api.ServerErrorResponse(w, r, err)
 			return
 		}
+	}
+}
+
+type ToggleTaskRequest struct {
+	HasCompleted bool   `json:"hasCompleted"`
+	HasHidden    bool   `json:"hasHidden"`
+	UserID       string `json:"userID"`
+}
+
+// ToogleTaskHandler godoc
+//
+//	@Summary		Toggle Task
+//	@Description	toggle a task of the current user
+//	@Tags			tasks
+//	@Produce		json
+//	@Param			request	body	ToggleTaskRequest	true	"request body"
+//	@Param			taskID	path	string				true	"Task ID"
+//	@Success		200
+//	@Failure		400	{object}	object{detail=string,status=int,title=string,type=string}
+//	@Failure		500	{object}	object{detail=string,status=int,title=string,type=string}
+//	@Router			/tasks/shared/{taskID} [put]
+func (s *Server) ToggleTaskHandler(w http.ResponseWriter, r *http.Request) {
+	var input ToggleTaskRequest
+	err := api.ReadJSON(w, r, &input)
+	if err != nil {
+		api.BadRequestResponse(w, r, err)
+		return
+	}
+
+	taskId := chi.URLParam(r, "taskID")
+
+	if input.HasCompleted {
+		err = task.ToggleCompleted(r.Context(), s.db, input.UserID, taskId)
+	} else if input.HasHidden {
+		slog.Info("toggling hidden", "taskID", taskId)
+	}
+
+	if err != nil {
+		api.ServerErrorResponse(w, r, err)
+		return
 	}
 }

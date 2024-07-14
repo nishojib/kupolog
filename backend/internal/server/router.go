@@ -41,6 +41,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		v1Router.Post("/auth/revoke", s.RevokeTokenHandler)
 
 		v1Router.Get("/tasks/shared", s.SharedTasksHandler)
+		v1Router.Put("/tasks/shared/{taskID}", s.ToggleTaskHandler)
 	})
 
 	return router

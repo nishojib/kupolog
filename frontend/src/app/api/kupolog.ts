@@ -55,8 +55,16 @@ export interface ServerSharedTaskResponse {
 }
 
 export interface ServerTaskResponse {
+  completed?: boolean;
+  hidden?: boolean;
   taskID?: string;
   title?: string;
+}
+
+export interface ServerToggleTaskRequest {
+  hasCompleted?: boolean;
+  hasHidden?: boolean;
+  userID?: string;
 }
 
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from "axios";
@@ -333,6 +341,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "GET",
         query: query,
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description toggle a task of the current user
+     *
+     * @tags tasks
+     * @name SharedUpdate
+     * @summary Toggle Task
+     * @request PUT:/tasks/shared/{taskID}
+     */
+    sharedUpdate: (taskId: string, request: ServerToggleTaskRequest, params: RequestParams = {}) =>
+      this.request<
+        void,
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/tasks/shared/${taskId}`,
+        method: "PUT",
+        body: request,
+        type: ContentType.Json,
         ...params,
       }),
   };
