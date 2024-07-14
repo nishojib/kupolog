@@ -109,3 +109,18 @@ func (r *Repository) UpdateUser(ctx context.Context, u *user.User) error {
 
 	return nil
 }
+
+func (r *Repository) GetUserByUserID(ctx context.Context, userID string) (user.User, error) {
+	var u user.User
+	err := r.db.NewSelect().Model(&u).Where("user_id = ?", userID).Scan(ctx)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return user.User{}, repoErrors.ErrRecordNotFound
+		default:
+			return user.User{}, err
+		}
+	}
+
+	return u, nil
+}

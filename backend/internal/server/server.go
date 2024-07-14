@@ -108,6 +108,7 @@ func (s *Server) Append(opts ...options.Option[Server]) *Server {
 type Repository interface {
 	GetUserByProviderID(ctx context.Context, providerAccountID string) (user.User, error)
 	InsertAndLinkAccount(ctx context.Context, u *user.User, account *user.Account) error
+	GetUserByUserID(ctx context.Context, userID string) (user.User, error)
 
 	IsTokenRevoked(ctx context.Context, token string) (bool, error)
 	RevokeToken(ctx context.Context, token string) error

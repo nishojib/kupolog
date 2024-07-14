@@ -64,7 +64,6 @@ export interface ServerTaskResponse {
 export interface ServerToggleTaskRequest {
   hasCompleted?: boolean;
   hasHidden?: boolean;
-  userID?: string;
 }
 
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from "axios";

@@ -6,7 +6,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/nishojib/ffxivdailies/internal/api"
+	"github.com/nishojib/ffxivdailies/internal/auth"
 	"github.com/nishojib/ffxivdailies/internal/task"
+	"github.com/nishojib/ffxivdailies/internal/user"
 )
 
 // SharedTaskResponse represents the response for the shared tasks endpoint.
@@ -34,7 +36,13 @@ type TaskResponse struct {
 //	@Failure		500		{object}	object{detail=string,status=int,title=string,type=string}
 //	@Router			/tasks/shared [get]
 func (s *Server) SharedTasksHandler(w http.ResponseWriter, r *http.Request) {
-	input, err := task.GetTasks(r.Context(), s.db, "zz54ewgaijg1majlfxb63e6q")
+	userID := r.Context().Value(auth.UserIDKey).(user.ID)
+	if userID == "" {
+		api.AuthenticationRequiredResponse(w, r)
+		return
+	}
+
+	input, err := task.GetTasks(r.Context(), s.db, string(userID))
 	if err != nil {
 		api.ServerErrorResponse(w, r, err)
 		return
@@ -108,9 +116,8 @@ func (s *Server) SharedTasksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type ToggleTaskRequest struct {
-	HasCompleted bool   `json:"hasCompleted"`
-	HasHidden    bool   `json:"hasHidden"`
-	UserID       string `json:"userID"`
+	HasCompleted bool `json:"hasCompleted"`
+	HasHidden    bool `json:"hasHidden"`
 }
 
 // ToogleTaskHandler godoc
@@ -126,6 +133,14 @@ type ToggleTaskRequest struct {
 //	@Failure		500	{object}	object{detail=string,status=int,title=string,type=string}
 //	@Router			/tasks/shared/{taskID} [put]
 func (s *Server) ToggleTaskHandler(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(auth.UserIDKey).(user.ID)
+	if userID == "" {
+		api.AuthenticationRequiredResponse(w, r)
+		return
+	}
+
+	slog.Info("toggling task", "userID", userID)
+
 	var input ToggleTaskRequest
 	err := api.ReadJSON(w, r, &input)
 	if err != nil {
@@ -136,7 +151,7 @@ func (s *Server) ToggleTaskHandler(w http.ResponseWriter, r *http.Request) {
 	taskId := chi.URLParam(r, "taskID")
 
 	if input.HasCompleted {
-		err = task.ToggleCompleted(r.Context(), s.db, input.UserID, taskId)
+		err = task.ToggleCompleted(r.Context(), s.db, string(userID), taskId)
 	} else if input.HasHidden {
 		slog.Info("toggling hidden", "taskID", taskId)
 	}

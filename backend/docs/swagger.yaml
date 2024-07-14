@@ -86,8 +86,6 @@ definitions:
         type: boolean
       hasHidden:
         type: boolean
-      userID:
-        type: string
     type: object
 externalDocs:
   description: OpenAPI

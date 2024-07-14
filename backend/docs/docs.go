@@ -581,9 +581,6 @@ const docTemplate = `{
                 },
                 "hasHidden": {
                     "type": "boolean"
-                },
-                "userID": {
-                    "type": "string"
                 }
             }
         }

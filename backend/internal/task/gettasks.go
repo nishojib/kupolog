@@ -25,6 +25,7 @@ type TaskResponse struct {
 
 // GetTasks returns the the list of tasks
 func GetTasks(ctx context.Context, db taskGetter, userID string) (Tasks, error) {
+
 	var input struct {
 		Weeklies []struct {
 			TaskID string `json:"taskID"`

@@ -11,6 +11,10 @@ import (
 
 type TokenType string
 
+type UserKey string
+
+const UserIDKey = UserKey("user_id")
+
 const (
 	TokenTypeAccess  TokenType = "access-token"
 	TokenTypeRefresh TokenType = "refresh-token"

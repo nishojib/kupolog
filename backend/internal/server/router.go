@@ -40,8 +40,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 		v1Router.Post("/auth/refresh", s.RefreshTokenHandler)
 		v1Router.Post("/auth/revoke", s.RevokeTokenHandler)
 
-		v1Router.Get("/tasks/shared", s.SharedTasksHandler)
-		v1Router.Put("/tasks/shared/{taskID}", s.ToggleTaskHandler)
+		v1Router.Group(func(authRouter chi.Router) {
+			authRouter.Use(s.withAuthentication)
+
+			authRouter.Get("/tasks/shared", s.SharedTasksHandler)
+			authRouter.Put("/tasks/shared/{taskID}", s.ToggleTaskHandler)
+		})
+
 	})
 
 	return router

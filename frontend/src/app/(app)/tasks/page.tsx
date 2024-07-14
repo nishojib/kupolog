@@ -31,7 +31,7 @@ export default async function Page() {
                     return;
                   }
 
-                  await toggleComplete(taskID, session?.user?.id);
+                  await toggleComplete(taskID);
                   revalidatePath('/tasks');
                 }}
               />
@@ -57,7 +57,7 @@ export default async function Page() {
                     return;
                   }
 
-                  await toggleComplete(taskID, session?.user?.id);
+                  await toggleComplete(taskID);
                   revalidatePath('/tasks');
                 }}
               />

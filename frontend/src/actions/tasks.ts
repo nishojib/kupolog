@@ -6,10 +6,9 @@ export async function getTasks(kind?: string) {
 }
 
 // TODO: update the function to have userID sent from the request header
-export async function toggleComplete(taskID: string, userID: string) {
+export async function toggleComplete(taskID: string) {
   return await kupologApi.tasks.sharedUpdate(taskID, {
     hasCompleted: true,
     hasHidden: false,
-    userID: userID,
   });
 }
