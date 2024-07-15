@@ -59,5 +59,4 @@ func TestNewLimiter(t *testing.T) {
 	limiter := api.NewLimiter(25, true)
 
 	assert.ObjectsAreEqual(limiter, api.Limiter{25, true})
-
 }

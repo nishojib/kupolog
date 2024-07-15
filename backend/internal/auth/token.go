@@ -11,13 +11,19 @@ import (
 
 type TokenType string
 
+type UserKey string
+
+const UserIDKey = UserKey("user_id")
+
 const (
 	TokenTypeAccess  TokenType = "access-token"
 	TokenTypeRefresh TokenType = "refresh-token"
 )
 
-var ErrNoAuthHeaderIncluded = errors.New("no auth header included in request")
-var ErrMalformedAuthHeader = errors.New("malformed authorization header")
+var (
+	ErrNoAuthHeaderIncluded = errors.New("no auth header included in request")
+	ErrMalformedAuthHeader  = errors.New("malformed authorization header")
+)
 
 func New(issuer TokenType, userId string, secret string, expiresIn time.Duration) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{

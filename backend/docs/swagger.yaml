@@ -1,6 +1,8 @@
 basePath: /v1
 definitions:
-  handlers.AccountRequest:
+  problem.Problem:
+    type: object
+  server.AccountRequest:
     properties:
       access_token:
         type: string
@@ -11,27 +13,23 @@ definitions:
       provider_account_id:
         type: string
     type: object
-  handlers.ServerInfo:
+  server.LoginResponse:
     properties:
-      environment:
+      token:
+        $ref: '#/definitions/server.LoginTokenResponse'
+      user:
+        $ref: '#/definitions/server.LoginUserResponse'
+    type: object
+  server.LoginTokenResponse:
+    properties:
+      access_token:
         type: string
-      version:
+      refresh_token:
         type: string
     type: object
-  handlers.ServerStatus:
-    description: Response for the health check
+  server.LoginUserResponse:
     properties:
-      status:
-        description: Status is the health status of the service
-        type: string
-      system_info:
-        allOf:
-        - $ref: '#/definitions/handlers.ServerInfo'
-        description: SystemInfo contains information about the system
-    type: object
-  models.User:
-    properties:
-      created_at:
+      createdAt:
         type: string
       email:
         type: string
@@ -39,10 +37,55 @@ definitions:
         type: string
       name:
         type: string
-      user_id:
+      userID:
         type: string
     type: object
-  problem.Problem:
+  server.ServerInfo:
+    properties:
+      environment:
+        type: string
+      version:
+        type: string
+    type: object
+  server.ServerStatus:
+    description: Response for the health check
+    properties:
+      status:
+        description: Status is the health status of the service
+        type: string
+      system_info:
+        allOf:
+        - $ref: '#/definitions/server.ServerInfo'
+        description: SystemInfo contains information about the system
+    type: object
+  server.SharedTaskResponse:
+    properties:
+      dailies:
+        items:
+          $ref: '#/definitions/server.TaskResponse'
+        type: array
+      weeklies:
+        items:
+          $ref: '#/definitions/server.TaskResponse'
+        type: array
+    type: object
+  server.TaskResponse:
+    properties:
+      completed:
+        type: boolean
+      hidden:
+        type: boolean
+      taskID:
+        type: string
+      title:
+        type: string
+    type: object
+  server.ToggleTaskRequest:
+    properties:
+      hasCompleted:
+        type: boolean
+      hasHidden:
+        type: boolean
     type: object
 externalDocs:
   description: OpenAPI
@@ -72,24 +115,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handlers.AccountRequest'
+          $ref: '#/definitions/server.AccountRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            properties:
-              token:
-                properties:
-                  access_token:
-                    type: string
-                  refresh_token:
-                    type: string
-                type: object
-              user:
-                $ref: '#/definitions/models.User'
-            type: object
+            $ref: '#/definitions/server.LoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -255,7 +288,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.ServerStatus'
+            $ref: '#/definitions/server.ServerStatus'
         "500":
           description: Internal Server Error
           schema:
@@ -263,6 +296,87 @@ paths:
       summary: Health check
       tags:
       - health
+  /tasks/shared:
+    get:
+      description: Get the shared tasks
+      parameters:
+      - description: Kind of tasks to return
+        in: query
+        name: kind
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.SharedTaskResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: Shared tasks
+      tags:
+      - tasks
+  /tasks/shared/{taskID}:
+    put:
+      description: toggle a task of the current user
+      parameters:
+      - description: request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/server.ToggleTaskRequest'
+      - description: Task ID
+        in: path
+        name: taskID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              detail:
+                type: string
+              status:
+                type: integer
+              title:
+                type: string
+              type:
+                type: string
+            type: object
+      summary: Toggle Task
+      tags:
+      - tasks
 securityDefinitions:
   Bearer:
     description: '"Type ''Bearer TOKEN'' to correctly set the API Key"'

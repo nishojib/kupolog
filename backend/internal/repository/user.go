@@ -4,28 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"strings"
-	"time"
 
-	"github.com/nishojib/ffxivdailies/internal/data/models"
-
+	repoErrors "github.com/nishojib/ffxivdailies/internal/errors"
+	"github.com/nishojib/ffxivdailies/internal/user"
 	"github.com/uptrace/bun"
 )
 
-type UserRepository struct {
-	db *bun.DB
-}
-
-func NewUserRepository(db *bun.DB) *UserRepository {
-	return &UserRepository{db}
-}
-
-func (ur *UserRepository) InsertAndLinkAccount(user *models.User, account *models.Account) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	err := ur.db.RunInTx(
+func (r *Repository) InsertAndLinkAccount(
+	ctx context.Context,
+	user *user.User,
+	account *user.Account,
+) error {
+	err := r.db.RunInTx(
 		ctx,
 		&sql.TxOptions{},
 		func(ctx context.Context, tx bun.Tx) error {
@@ -47,8 +38,6 @@ func (ur *UserRepository) InsertAndLinkAccount(user *models.User, account *model
 
 			account.UserID = user.ID
 
-			fmt.Printf("%+v\n", account)
-
 			_, err = tx.NewInsert().Model(account).Exec(ctx)
 			if err != nil {
 				return err
@@ -65,13 +54,13 @@ func (ur *UserRepository) InsertAndLinkAccount(user *models.User, account *model
 	return nil
 }
 
-func (ur *UserRepository) GetByProviderID(providerAccountID string) (models.User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	var user models.User
-	err := ur.db.NewSelect().
-		Model(&user).
+func (r *Repository) GetUserByProviderID(
+	ctx context.Context,
+	providerAccountID string,
+) (user.User, error) {
+	var u user.User
+	err := r.db.NewSelect().
+		Model(&u).
 		Join("JOIN accounts ON accounts.user_id = user.id").
 		Where("accounts.provider_account_id = ?", providerAccountID).
 		Scan(ctx)
@@ -79,31 +68,28 @@ func (ur *UserRepository) GetByProviderID(providerAccountID string) (models.User
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return models.User{}, ErrRecordNotFound
+			return user.User{}, repoErrors.ErrRecordNotFound
 		default:
-			return models.User{}, err
+			return user.User{}, err
 		}
 	}
 
-	return user, nil
+	return u, nil
 }
 
-func (ur *UserRepository) Update(user *models.User) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	result, err := ur.db.NewUpdate().
-		Model(user).
-		Set("title = ?", user.Name).
-		Set("author = ?", user.Email).
-		Set("version = ?", user.Version+1).
-		Where("id = ?", user.ID).
-		Where("version = ?", user.Version).
+func (r *Repository) UpdateUser(ctx context.Context, u *user.User) error {
+	result, err := r.db.NewUpdate().
+		Model(u).
+		Set("title = ?", u.Name).
+		Set("author = ?", u.Email).
+		Set("version = ?", u.Version+1).
+		Where("id = ?", u.ID).
+		Where("version = ?", u.Version).
 		Exec(ctx)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return ErrEditConflict
+			return repoErrors.ErrEditConflict
 		default:
 			return err
 		}
@@ -115,8 +101,23 @@ func (ur *UserRepository) Update(user *models.User) error {
 	}
 
 	if rowsAffected == 0 {
-		return ErrEditConflict
+		return repoErrors.ErrEditConflict
 	}
 
 	return nil
+}
+
+func (r *Repository) GetUserByUserID(ctx context.Context, userID string) (user.User, error) {
+	var u user.User
+	err := r.db.NewSelect().Model(&u).Where("user_id = ?", userID).Scan(ctx)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return user.User{}, repoErrors.ErrRecordNotFound
+		default:
+			return user.User{}, err
+		}
+	}
+
+	return u, nil
 }

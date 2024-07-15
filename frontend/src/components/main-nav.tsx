@@ -29,15 +29,15 @@ export function MainNav() {
           Profile
         </Link>
         <Link
-          href="/dailies"
+          href="/tasks"
           className={cn(
             'hover:text-foreground/80 transition-colors',
-            pathname?.startsWith('/dailies')
+            pathname?.startsWith('/tasks')
               ? 'text-foreground'
               : 'text-foreground/60',
           )}
         >
-          Dailies
+          Tasks
         </Link>
       </nav>
     </div>

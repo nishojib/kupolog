@@ -44,7 +44,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.AccountRequest"
+                            "$ref": "#/definitions/server.AccountRequest"
                         }
                     }
                 ],
@@ -52,23 +52,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "token": {
-                                    "type": "object",
-                                    "properties": {
-                                        "access_token": {
-                                            "type": "string"
-                                        },
-                                        "refresh_token": {
-                                            "type": "string"
-                                        }
-                                    }
-                                },
-                                "user": {
-                                    "$ref": "#/definitions/models.User"
-                                }
-                            }
+                            "$ref": "#/definitions/server.LoginResponse"
                         }
                     },
                     "400": {
@@ -326,7 +310,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.ServerStatus"
+                            "$ref": "#/definitions/server.ServerStatus"
                         }
                     },
                     "500": {
@@ -337,10 +321,137 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/tasks/shared": {
+            "get": {
+                "description": "Get the shared tasks",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Shared tasks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kind of tasks to return",
+                        "name": "kind",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.SharedTaskResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "detail": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "integer"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tasks/shared/{taskID}": {
+            "put": {
+                "description": "toggle a task of the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Toggle Task",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.ToggleTaskRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "taskID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "detail": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "integer"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "detail": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "integer"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "handlers.AccountRequest": {
+        "problem.Problem": {
+            "type": "object"
+        },
+        "server.AccountRequest": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -357,39 +468,32 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.ServerInfo": {
+        "server.LoginResponse": {
             "type": "object",
             "properties": {
-                "environment": {
+                "token": {
+                    "$ref": "#/definitions/server.LoginTokenResponse"
+                },
+                "user": {
+                    "$ref": "#/definitions/server.LoginUserResponse"
+                }
+            }
+        },
+        "server.LoginTokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
                     "type": "string"
                 },
-                "version": {
+                "refresh_token": {
                     "type": "string"
                 }
             }
         },
-        "handlers.ServerStatus": {
-            "description": "Response for the health check",
+        "server.LoginUserResponse": {
             "type": "object",
             "properties": {
-                "status": {
-                    "description": "Status is the health status of the service",
-                    "type": "string"
-                },
-                "system_info": {
-                    "description": "SystemInfo contains information about the system",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/handlers.ServerInfo"
-                        }
-                    ]
-                }
-            }
-        },
-        "models.User": {
-            "type": "object",
-            "properties": {
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "email": {
@@ -401,13 +505,84 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "user_id": {
+                "userID": {
                     "type": "string"
                 }
             }
         },
-        "problem.Problem": {
-            "type": "object"
+        "server.ServerInfo": {
+            "type": "object",
+            "properties": {
+                "environment": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.ServerStatus": {
+            "description": "Response for the health check",
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status is the health status of the service",
+                    "type": "string"
+                },
+                "system_info": {
+                    "description": "SystemInfo contains information about the system",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/server.ServerInfo"
+                        }
+                    ]
+                }
+            }
+        },
+        "server.SharedTaskResponse": {
+            "type": "object",
+            "properties": {
+                "dailies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.TaskResponse"
+                    }
+                },
+                "weeklies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/server.TaskResponse"
+                    }
+                }
+            }
+        },
+        "server.TaskResponse": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean"
+                },
+                "hidden": {
+                    "type": "boolean"
+                },
+                "taskID": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "server.ToggleTaskRequest": {
+            "type": "object",
+            "properties": {
+                "hasCompleted": {
+                    "type": "boolean"
+                },
+                "hasHidden": {
+                    "type": "boolean"
+                }
+            }
         }
     },
     "securityDefinitions": {

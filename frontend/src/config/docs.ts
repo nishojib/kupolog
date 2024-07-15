@@ -11,8 +11,8 @@ export const docsConfig: DocsConfig = {
       href: '/profile',
     },
     {
-      title: 'Dailies',
-      href: '/dailies',
+      title: 'Tasks',
+      href: '/tasks',
     },
   ],
 };

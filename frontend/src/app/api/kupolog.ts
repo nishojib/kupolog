@@ -9,35 +9,62 @@
  * ---------------------------------------------------------------
  */
 
-export interface HandlersAccountRequest {
+export type ProblemProblem = object;
+
+export interface ServerAccountRequest {
   access_token?: string;
   expires_at?: number;
   provider?: string;
   provider_account_id?: string;
 }
 
-export interface HandlersServerInfo {
+export interface ServerLoginResponse {
+  token?: ServerLoginTokenResponse;
+  user?: ServerLoginUserResponse;
+}
+
+export interface ServerLoginTokenResponse {
+  access_token?: string;
+  refresh_token?: string;
+}
+
+export interface ServerLoginUserResponse {
+  createdAt?: string;
+  email?: string;
+  image?: string;
+  name?: string;
+  userID?: string;
+}
+
+export interface ServerServerInfo {
   environment?: string;
   version?: string;
 }
 
 /** Response for the health check */
-export interface HandlersServerStatus {
+export interface ServerServerStatus {
   /** Status is the health status of the service */
   status?: string;
   /** SystemInfo contains information about the system */
-  system_info?: HandlersServerInfo;
+  system_info?: ServerServerInfo;
 }
 
-export interface ModelsUser {
-  created_at?: string;
-  email?: string;
-  image?: string;
-  name?: string;
-  user_id?: string;
+export interface ServerSharedTaskResponse {
+  dailies?: ServerTaskResponse[];
+  weeklies?: ServerTaskResponse[];
 }
 
-export type ProblemProblem = object;
+export interface ServerTaskResponse {
+  completed?: boolean;
+  hidden?: boolean;
+  taskID?: string;
+  title?: string;
+}
+
+export interface ServerToggleTaskRequest {
+  hasCompleted?: boolean;
+  hasHidden?: boolean;
+}
 
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from "axios";
 import axios from "axios";
@@ -118,6 +145,9 @@ export class HttpClient<SecurityDataType = unknown> {
   }
 
   protected createFormData(input: Record<string, unknown>): FormData {
+    if (input instanceof FormData) {
+      return input;
+    }
     return Object.keys(input || {}).reduce((formData, key) => {
       const property = input[key];
       const propertyContent: any[] = property instanceof Array ? property : [property];
@@ -191,15 +221,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary login
      * @request POST:/auth/login
      */
-    loginCreate: (request: HandlersAccountRequest, params: RequestParams = {}) =>
+    loginCreate: (request: ServerAccountRequest, params: RequestParams = {}) =>
       this.request<
-        {
-          token?: {
-            access_token?: string;
-            refresh_token?: string;
-          };
-          user?: ModelsUser;
-        },
+        ServerLoginResponse,
         {
           detail?: string;
           status?: number;
@@ -280,10 +304,67 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/health
      */
     healthList: (params: RequestParams = {}) =>
-      this.request<HandlersServerStatus, ProblemProblem>({
+      this.request<ServerServerStatus, ProblemProblem>({
         path: `/health`,
         method: "GET",
         format: "json",
+        ...params,
+      }),
+  };
+  tasks = {
+    /**
+     * @description Get the shared tasks
+     *
+     * @tags tasks
+     * @name SharedList
+     * @summary Shared tasks
+     * @request GET:/tasks/shared
+     */
+    sharedList: (
+      query: {
+        /** Kind of tasks to return */
+        kind: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        ServerSharedTaskResponse,
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/tasks/shared`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description toggle a task of the current user
+     *
+     * @tags tasks
+     * @name SharedUpdate
+     * @summary Toggle Task
+     * @request PUT:/tasks/shared/{taskID}
+     */
+    sharedUpdate: (taskId: string, request: ServerToggleTaskRequest, params: RequestParams = {}) =>
+      this.request<
+        void,
+        {
+          detail?: string;
+          status?: number;
+          title?: string;
+          type?: string;
+        }
+      >({
+        path: `/tasks/shared/${taskId}`,
+        method: "PUT",
+        body: request,
+        type: ContentType.Json,
         ...params,
       }),
   };
