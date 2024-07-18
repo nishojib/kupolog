@@ -25,13 +25,10 @@ func (s *Server) EventsHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Listen for messages and send to the client
-	for {
-		select {
-		case msg := <-messageChan:
-			fmt.Fprintf(w, "data: %s\n\n", msg)
-			if f, ok := w.(http.Flusher); ok {
-				f.Flush()
-			}
+	for msg := range messageChan {
+		fmt.Fprintf(w, "data: %s\n\n", msg)
+		if f, ok := w.(http.Flusher); ok {
+			f.Flush()
 		}
 	}
 }
