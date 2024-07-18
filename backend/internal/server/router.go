@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -21,9 +22,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 	}
 
 	router.Use(middleware.Logger, middleware.Recoverer, cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowedOrigins: []string{"http://localhost:3000", "https://kupolog.com"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{
+			"Accept",
+			"Authorization",
+			"Content-Type",
+			"Cache-Control",
+			"Connection",
+		},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
@@ -39,6 +46,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 		v1Router.Post("/auth/login", s.LoginHandler)
 		v1Router.Post("/auth/refresh", s.RefreshTokenHandler)
 		v1Router.Post("/auth/revoke", s.RevokeTokenHandler)
+		v1Router.Get("/events", func(w http.ResponseWriter, r *http.Request) {
+			go func() {
+				// Received browser disconnection
+				<-r.Context().Done()
+				slog.Info("Client disconnected")
+			}()
+
+			s.sse.ServeHTTP(w, r)
+		})
 
 		v1Router.Group(func(authRouter chi.Router) {
 			authRouter.Use(s.withAuthentication)

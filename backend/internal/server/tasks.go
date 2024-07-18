@@ -116,8 +116,9 @@ func (s *Server) SharedTasksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type ToggleTaskRequest struct {
-	HasCompleted bool `json:"hasCompleted"`
-	HasHidden    bool `json:"hasHidden"`
+	HasCompleted bool   `json:"hasCompleted"`
+	HasHidden    bool   `json:"hasHidden"`
+	Kind         string `json:"kind"`
 }
 
 // ToogleTaskHandler godoc
@@ -151,7 +152,7 @@ func (s *Server) ToggleTaskHandler(w http.ResponseWriter, r *http.Request) {
 	taskId := chi.URLParam(r, "taskID")
 
 	if input.HasCompleted {
-		err = task.ToggleCompleted(r.Context(), s.db, string(userID), taskId)
+		err = task.ToggleCompleted(r.Context(), s.db, string(userID), taskId, input.Kind)
 	} else if input.HasHidden {
 		slog.Info("toggling hidden", "taskID", taskId)
 	}

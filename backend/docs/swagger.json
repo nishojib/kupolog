@@ -574,6 +574,9 @@
                 },
                 "hasHidden": {
                     "type": "boolean"
+                },
+                "kind": {
+                    "type": "string"
                 }
             }
         }

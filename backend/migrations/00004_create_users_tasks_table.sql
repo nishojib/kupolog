@@ -6,11 +6,13 @@ CREATE TABLE IF NOT EXISTS users_tasks (
   version INTEGER NOT NULL DEFAULT 1,
   completed BOOLEAN NOT NULL DEFAULT FALSE,
   hidden BOOLEAN NOT NULL DEFAULT FALSE,
+  kind TEXT NOT NULL,
   PRIMARY KEY (user_id, task_id)
 );
 
 CREATE INDEX IF NOT EXISTS users_tasks_user_id_index ON users_tasks(user_id);
 CREATE INDEX IF NOT EXISTS users_tasks_task_id_index ON users_tasks(task_id);
+CREATE INDEX IF NOT EXISTS users_tasks_kind_index ON users_tasks(kind);
 -- +goose StatementEnd
 
 -- +goose Down

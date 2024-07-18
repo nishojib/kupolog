@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log/slog"
 
 	repoErrors "github.com/nishojib/ffxivdailies/internal/errors"
 	"github.com/nishojib/ffxivdailies/internal/task"
+	"github.com/uptrace/bun"
 )
 
 // AddTaskToUser adds a task to a user.
@@ -93,4 +95,50 @@ func (r *Repository) GetTasksForUser(ctx context.Context, userID string) ([]task
 	}
 
 	return tasks, nil
+}
+
+func (r *Repository) UpdateTaskForKind(ctx context.Context, kind string) error {
+	err := r.db.RunInTx(context.Background(), nil, func(ctx context.Context, tx bun.Tx) error {
+		var ts []task.Task
+		err := tx.NewSelect().Model(&ts).Where("kind = ?", kind).Scan(context.Background())
+		if err != nil {
+			slog.Error("failed to get tasks", "error", err)
+			return err
+		}
+
+		for _, t := range ts {
+			if !t.Completed {
+				continue
+			}
+
+			result, err := tx.NewUpdate().
+				Model(&t).
+				Set("completed = ?", false).
+				Set("version = ?", t.Version+1).
+				Where("ut.user_id = ?", t.UserID).
+				Where("ut.task_id = ?", t.TaskID).
+				Where("ut.version = ?", t.Version).
+				Exec(context.Background())
+
+			if err != nil {
+				slog.Error("failed to update task", "error", err)
+				return err
+			}
+
+			rowsAffected, err := result.RowsAffected()
+			if err != nil {
+				slog.Error("failed to get rows affected", "error", err)
+				return err
+			}
+
+			if rowsAffected == 0 {
+				slog.Error("task not found", "taskID", t.TaskID)
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	return err
 }
