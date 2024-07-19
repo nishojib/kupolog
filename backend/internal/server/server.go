@@ -61,7 +61,6 @@ func New(db Repository, provider Provider, sse *sse.Server, cfg Config) *Server 
 
 // Serve starts the server and blocks until the server is stopped.
 func (s *Server) ListenAndServe(port int) error {
-	const addr = "127.0.0.1"
 
 	shutdownError := make(chan error, 1)
 
@@ -86,7 +85,7 @@ func (s *Server) ListenAndServe(port int) error {
 		shutdownError <- nil
 	}()
 
-	s.srv.Addr = fmt.Sprintf("%s:%d", addr, port)
+	s.srv.Addr = fmt.Sprintf(":%d", port)
 	err := s.srv.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
