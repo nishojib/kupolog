@@ -9,7 +9,13 @@ import (
 )
 
 // ToggleCompleted toggles the completed status of a task.
-func ToggleCompleted(ctx context.Context, db taskToggler, userID string, taskID string) error {
+func ToggleCompleted(
+	ctx context.Context,
+	db taskToggler,
+	userID string,
+	taskID string,
+	kind string,
+) error {
 	t, err := db.GetUserTask(ctx, userID, taskID)
 	if err != nil {
 		if errors.Is(err, repoErrors.ErrRecordNotFound) {
@@ -20,6 +26,7 @@ func ToggleCompleted(ctx context.Context, db taskToggler, userID string, taskID 
 				TaskID:    ID(taskID),
 				Completed: true,
 				Hidden:    false,
+				Kind:      Kind(kind),
 			}
 
 			err = db.AddUserTask(ctx, tsk)

@@ -13,10 +13,12 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/nishojib/ffxivdailies/docs"
 	"github.com/nishojib/ffxivdailies/internal/api"
+	"github.com/nishojib/ffxivdailies/internal/cronjob"
 	"github.com/nishojib/ffxivdailies/internal/provider"
 	"github.com/nishojib/ffxivdailies/internal/repository"
 	"github.com/nishojib/ffxivdailies/internal/server"
 	"github.com/nishojib/ffxivdailies/internal/vcs"
+	"github.com/r3labs/sse/v2"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
@@ -97,11 +99,24 @@ func main() {
 		os.Exit(1)
 	}
 
+	repo := repository.New(db)
+
+	sseServer := sse.New()
+	defer sseServer.RemoveStream("messages")
+	defer sseServer.Close()
+
+	sseServer.CreateStream("messages")
+
+	c := cronjob.New(repo, sseServer)
+	c.Start()
+	defer c.Stop()
+
 	port, err := strconv.Atoi(os.Getenv("PORT"))
 
 	s := server.New(
-		repository.New(db),
+		repo,
 		provider.New(),
+		sseServer,
 		server.Config{
 			Limiter:    limiter,
 			Env:        env,
@@ -122,7 +137,6 @@ func main() {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
-
 }
 
 func initDB(dbCfg dbConfig, env api.Environment) (*bun.DB, error) {

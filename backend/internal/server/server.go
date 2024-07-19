@@ -16,13 +16,16 @@ import (
 	"github.com/nishojib/ffxivdailies/internal/options"
 	"github.com/nishojib/ffxivdailies/internal/task"
 	"github.com/nishojib/ffxivdailies/internal/user"
+	"github.com/r3labs/sse/v2"
 )
 
 // Server represents an HTTP server.
 type Server struct {
 	srv      *http.Server
 	db       Repository
+	sse      *sse.Server
 	provider Provider
+	clients  map[chan string]bool
 	wg       sync.WaitGroup
 
 	cfg Config
@@ -36,11 +39,13 @@ type Config struct {
 }
 
 // New creates a new server with the provided option.Options.
-func New(db Repository, provider Provider, cfg Config) *Server {
+func New(db Repository, provider Provider, sse *sse.Server, cfg Config) *Server {
 	s := &Server{
 		db:       db,
 		provider: provider,
+		sse:      sse,
 		cfg:      cfg,
+		clients:  make(map[chan string]bool),
 	}
 
 	s.srv = &http.Server{

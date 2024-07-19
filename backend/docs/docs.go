@@ -581,6 +581,9 @@ const docTemplate = `{
                 },
                 "hasHidden": {
                     "type": "boolean"
+                },
+                "kind": {
+                    "type": "string"
                 }
             }
         }
