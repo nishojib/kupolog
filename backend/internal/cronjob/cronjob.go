@@ -16,7 +16,7 @@ func New(taskResetter taskResetter, publisher messagePublisher) *cron.Cron {
 	c := cron.New(cron.WithSeconds(), cron.WithLocation(time.UTC))
 
 	slog.Info("Starting cron job to reset tasks every tuesday at 8am UTC (3am EST)")
-	c.AddFunc("0 0 8 * * 2", func() {
+	id, err := c.AddFunc("0 0 8 * * 2", func() {
 		err := resetTasksEveryTuesday(ctx, taskResetter)
 		if err != nil {
 			slog.Error("failed to reset tasks", "error", err)
@@ -24,11 +24,13 @@ func New(taskResetter taskResetter, publisher messagePublisher) *cron.Cron {
 		}
 		slog.Info("Tasks reset successfully for tuesday")
 		publisher.Publish("messages", &sse.Event{Data: []byte("Weekly tasks reset")})
-
 	})
+	if err != nil {
+		slog.Error("failed to add cron job", "cronjobID", id, "error", err)
+	}
 
 	slog.Info("Starting cron job to reset tasks every day at 3pm UTC (11am EST)")
-	c.AddFunc("0 0 15 * * *", func() {
+	id, err = c.AddFunc("0 0 15 * * *", func() {
 		err := resetTasksEveryday(ctx, taskResetter)
 		if err != nil {
 			slog.Error("failed to reset tasks", "error", err)
@@ -37,6 +39,9 @@ func New(taskResetter taskResetter, publisher messagePublisher) *cron.Cron {
 		slog.Info("Tasks reset successfully for every day")
 		publisher.Publish("messages", &sse.Event{Data: []byte("Daily tasks reset")})
 	})
+	if err != nil {
+		slog.Error("failed to add cron job", "cronjobID", id, "error", err)
+	}
 
 	return c
 }
