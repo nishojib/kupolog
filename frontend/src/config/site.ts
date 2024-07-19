@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: 'kupolog',
-  url: 'https://kupolog.com',
+  url: process.env.NEXT_PUBLIC_URL,
   ogImage: '',
   description: 'A simple app to track your daily FFXIV tasks.',
   links: {

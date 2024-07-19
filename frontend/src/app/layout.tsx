@@ -3,9 +3,9 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { SessionProvider } from 'next-auth/react';
-import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
 
+import { ThemeProvider } from '@/components/providers';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     default: siteConfig.name,
     template: `%s - ${siteConfig.name}`,
   },
-  metadataBase: new URL(siteConfig.url),
+  metadataBase: new URL(siteConfig.url ?? 'https://kupolog.com'),
   description: siteConfig.description,
   keywords: ['Final Fantasy XIV', 'FFXIV', 'FFXIV Dailies', 'FFXIV Tracker'],
   authors: [
@@ -71,7 +71,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head />
       <body
         className={cn(
@@ -86,7 +86,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div vaul-drawer-wrapper="">
+            <div>
               <div className="bg-background relative flex min-h-screen flex-col">
                 {children}
               </div>
