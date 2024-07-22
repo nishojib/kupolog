@@ -35,14 +35,8 @@ func (r *Repository) UpdateUserTask(ctx context.Context, t *task.Task) error {
 		Where("ut.task_id = ?", t.TaskID).
 		Where("ut.version = ?", t.Version).
 		Exec(ctx)
-
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return repoErrors.ErrEditConflict
-		default:
-			return err
-		}
+		return err
 	}
 
 	rowsAffected, err := result.RowsAffected()
@@ -98,9 +92,9 @@ func (r *Repository) GetTasksForUser(ctx context.Context, userID string) ([]task
 }
 
 func (r *Repository) UpdateTaskForKind(ctx context.Context, kind string) error {
-	err := r.db.RunInTx(context.Background(), nil, func(ctx context.Context, tx bun.Tx) error {
+	err := r.db.RunInTx(ctx, nil, func(innerCtx context.Context, tx bun.Tx) error {
 		var ts []task.Task
-		err := tx.NewSelect().Model(&ts).Where("kind = ?", kind).Scan(context.Background())
+		err := tx.NewSelect().Model(&ts).Where("kind = ?", kind).Scan(innerCtx)
 		if err != nil {
 			slog.Error("failed to get tasks", "error", err)
 			return err
@@ -118,7 +112,7 @@ func (r *Repository) UpdateTaskForKind(ctx context.Context, kind string) error {
 				Where("ut.user_id = ?", t.UserID).
 				Where("ut.task_id = ?", t.TaskID).
 				Where("ut.version = ?", t.Version).
-				Exec(context.Background())
+				Exec(innerCtx)
 
 			if err != nil {
 				slog.Error("failed to update task", "error", err)

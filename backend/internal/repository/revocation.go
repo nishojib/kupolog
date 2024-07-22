@@ -25,10 +25,6 @@ func (r *Repository) IsTokenRevoked(ctx context.Context, token string) (bool, er
 		}
 	}
 
-	if revocation.RevokedAt.IsZero() {
-		return false, nil
-	}
-
 	return true, nil
 }
 
