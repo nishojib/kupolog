@@ -24,25 +24,13 @@ type TaskResponse struct {
 }
 
 // GetTasks returns the the list of tasks
-func GetTasks(ctx context.Context, db taskGetter, userID string) (Tasks, error) {
-
-	var input struct {
-		Weeklies []struct {
-			TaskID string `json:"taskID"`
-			Title  string `json:"title"`
-		} `json:"weeklies"`
-		Dailies []struct {
-			TaskID string `json:"taskID"`
-			Title  string `json:"title"`
-		} `json:"dailies"`
-	}
-
-	buf, err := f.ReadFile("tasks.json")
-	if err != nil {
-		return Tasks{}, err
-	}
-
-	err = json.Unmarshal(buf, &input)
+func GetTasks(
+	ctx context.Context,
+	db TaskGetter,
+	userID string,
+) (Tasks, error) {
+	var input FileTaskRequest
+	err := convert(&input)
 	if err != nil {
 		return Tasks{}, err
 	}
@@ -53,20 +41,21 @@ func GetTasks(ctx context.Context, db taskGetter, userID string) (Tasks, error) 
 	}
 
 	var tasks Tasks
-	tasks.Weeklies = MergeTasks(input.Weeklies, ts)
-	tasks.Dailies = MergeTasks(input.Dailies, ts)
+	tasks.Weeklies = mergeTasks(input.Weeklies, ts)
+	tasks.Dailies = mergeTasks(input.Dailies, ts)
 
 	return tasks, nil
 }
 
-type taskGetter interface {
+// TaskGetter is an interface that represents the db operations for getting tasks.
+//
+//go:generate mockery --with-expecter --name TaskGetter
+type TaskGetter interface {
 	GetTasksForUser(ctx context.Context, userID string) ([]Task, error)
 }
 
-func MergeTasks(t1 []struct {
-	TaskID string `json:"taskID"`
-	Title  string `json:"title"`
-}, t2 []Task) []TaskResponse {
+// mergeTasks merges the tasks from the two slices.
+func mergeTasks(t1 []FileTask, t2 []Task) []TaskResponse {
 	taskMap := make(map[string]TaskResponse)
 
 	for _, t := range t1 {
@@ -96,4 +85,34 @@ func MergeTasks(t1 []struct {
 	})
 
 	return mergedTasks
+}
+
+type Request struct {
+	Weeklies []struct {
+		TaskID string `json:"taskID"`
+		Title  string `json:"title"`
+	} `json:"weeklies"`
+	Dailies []struct {
+		TaskID string `json:"taskID"`
+		Title  string `json:"title"`
+	} `json:"dailies"`
+}
+
+type FileTask struct {
+	TaskID string `json:"taskID"`
+	Title  string `json:"title"`
+}
+
+type FileTaskRequest struct {
+	Weeklies []FileTask `json:"weeklies"`
+	Dailies  []FileTask `json:"dailies"`
+}
+
+func convert(input *FileTaskRequest) error {
+	buf, err := f.ReadFile("tasks.json")
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(buf, &input)
 }

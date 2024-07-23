@@ -5,13 +5,12 @@ import (
 	"errors"
 
 	repoErrors "github.com/nishojib/ffxivdailies/internal/errors"
-	"golang.org/x/exp/slog"
 )
 
 // ToggleCompleted toggles the completed status of a task.
 func ToggleCompleted(
 	ctx context.Context,
-	db taskToggler,
+	db TaskToggler,
 	userID string,
 	taskID string,
 	kind string,
@@ -19,8 +18,6 @@ func ToggleCompleted(
 	t, err := db.GetUserTask(ctx, userID, taskID)
 	if err != nil {
 		if errors.Is(err, repoErrors.ErrRecordNotFound) {
-			slog.Info("task not found", "taskID", taskID)
-
 			tsk := &Task{
 				UserID:    ID(userID),
 				TaskID:    ID(taskID),
@@ -50,7 +47,10 @@ func ToggleCompleted(
 	return nil
 }
 
-type taskToggler interface {
+// TaskToggler is an interface that represents the db operations for toggling tasks.
+
+//go:generate mockery --with-expecter --name TaskToggler
+type TaskToggler interface {
 	GetUserTask(ctx context.Context, userID string, taskID string) (Task, error)
 	AddUserTask(ctx context.Context, t *Task) error
 	UpdateUserTask(ctx context.Context, t *Task) error
