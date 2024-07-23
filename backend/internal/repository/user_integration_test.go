@@ -34,26 +34,26 @@ func TestInsertAndLinkAccount_CreateNewUser(t *testing.T) {
 		Email:             "john@doe.com",
 	}
 
-	err := repo.InsertAndLinkAccount(context.Background(), &u, &a)
+	got, err := repo.InsertAndLinkAccount(context.Background(), u, a)
 	require.NoError(t, err)
 
-	var gotUser user.User
+	var expectedUser user.User
 	err = bunDB.NewSelect().
-		Model(&gotUser).
+		Model(&expectedUser).
 		Where("user_id = ?", u.UserID).
 		Scan(context.Background())
 	require.NoError(t, err)
 
-	assert.Equal(t, u, gotUser)
+	assert.Equal(t, got, expectedUser)
 
-	var gotAccount user.Account
+	var expectedAccount user.Account
 	err = bunDB.NewSelect().
-		Model(&gotAccount).
+		Model(&expectedAccount).
 		Where("provider_account_id = ?", a.ProviderAccountID).
 		Scan(context.Background())
 	require.NoError(t, err)
 
-	assert.Equal(t, u.ID, gotAccount.UserID)
+	assert.Equal(t, got.ID, expectedAccount.UserID)
 }
 
 func TestInsertAndLinkAccount_UpdateExistingUser(t *testing.T) {
@@ -87,26 +87,26 @@ func TestInsertAndLinkAccount_UpdateExistingUser(t *testing.T) {
 		Email:             "john@doe.com",
 	}
 
-	err = repo.InsertAndLinkAccount(context.Background(), &newUser, &a)
+	got, err := repo.InsertAndLinkAccount(context.Background(), newUser, a)
 	require.NoError(t, err)
 
-	var gotUser user.User
+	var expectedUser user.User
 	err = bunDB.NewSelect().
-		Model(&gotUser).
+		Model(&expectedUser).
 		Where("user_id = ?", u.UserID).
 		Scan(context.Background())
 	require.NoError(t, err)
 
-	assert.Equal(t, u, gotUser)
+	assert.Equal(t, got, expectedUser)
 
-	var gotAccount user.Account
+	var expectedAccount user.Account
 	err = bunDB.NewSelect().
-		Model(&gotAccount).
+		Model(&expectedAccount).
 		Where("provider_account_id = ?", a.ProviderAccountID).
 		Scan(context.Background())
 	require.NoError(t, err)
 
-	assert.Equal(t, u.ID, gotAccount.UserID)
+	assert.Equal(t, got.ID, expectedAccount.UserID)
 }
 
 func TestInsertAndLinkAccount_Error(t *testing.T) {
@@ -120,7 +120,7 @@ func TestInsertAndLinkAccount_Error(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 
-	err := repo.InsertAndLinkAccount(ctx, &user.User{}, &user.Account{})
+	_, err := repo.InsertAndLinkAccount(ctx, user.User{}, user.Account{})
 	require.Error(t, err)
 }
 
@@ -132,26 +132,22 @@ func TestGetUserByProviderID_Success(t *testing.T) {
 
 	repo := repository.New(bunDB)
 
-	u := user.User{
+	expected, err := repo.InsertAndLinkAccount(context.Background(), user.User{
 		UserID: "user-123456",
 		Name:   "John Doe",
 		Email:  "john@doe.com",
 		Image:  "https://example.com/image.png",
-	}
-
-	a := user.Account{
+	}, user.Account{
 		Provider:          "google",
 		ProviderAccountID: "provider-123456",
 		Email:             "john@doe.com",
-	}
-
-	err := repo.InsertAndLinkAccount(context.Background(), &u, &a)
+	})
 	require.NoError(t, err)
 
-	gotUser, err := repo.GetUserByProviderID(context.Background(), "provider-123456")
+	got, err := repo.GetUserByProviderID(context.Background(), "provider-123456")
 	require.NoError(t, err)
 
-	assert.Equal(t, u, gotUser)
+	assert.Equal(t, got, expected)
 }
 
 func TestGetUserByProviderID_NotFoundError(t *testing.T) {
@@ -174,12 +170,12 @@ func TestGetUserByProviderID_Error(t *testing.T) {
 
 	repo := repository.New(bunDB)
 
-	err := repo.InsertAndLinkAccount(context.Background(), &user.User{
+	_, err := repo.InsertAndLinkAccount(context.Background(), user.User{
 		UserID: "user-123456",
 		Name:   "John Doe",
 		Email:  "john@doe.com",
 		Image:  "https://example.com/image.png",
-	}, &user.Account{
+	}, user.Account{
 		Provider:          "google",
 		ProviderAccountID: "provider-123456",
 		Email:             "john@doe.com",
@@ -201,14 +197,12 @@ func TestUpdateUser_Success(t *testing.T) {
 
 	repo := repository.New(bunDB)
 
-	u := user.User{
+	u, err := repo.InsertAndLinkAccount(context.Background(), user.User{
 		UserID: "user-123456",
 		Name:   "John Doe",
 		Email:  "john@doe.com",
 		Image:  "https://example.com/image.png",
-	}
-
-	err := repo.InsertAndLinkAccount(context.Background(), &u, &user.Account{})
+	}, user.Account{})
 	require.NoError(t, err)
 
 	updatedUser := user.User{
@@ -261,14 +255,12 @@ func TestUpdateUser_Error(t *testing.T) {
 
 	repo := repository.New(bunDB)
 
-	u := user.User{
+	_, err := repo.InsertAndLinkAccount(context.Background(), user.User{
 		UserID: "user-123456",
 		Name:   "John Doe",
 		Email:  "john@doe.com",
 		Image:  "https://example.com/image.png",
-	}
-
-	err := repo.InsertAndLinkAccount(context.Background(), &u, &user.Account{})
+	}, user.Account{})
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -286,14 +278,12 @@ func TestGetByUserID_Success(t *testing.T) {
 
 	repo := repository.New(bunDB)
 
-	u := user.User{
+	u, err := repo.InsertAndLinkAccount(context.Background(), user.User{
 		UserID: "user-123456",
 		Name:   "John Doe",
 		Email:  "john@doe.com",
 		Image:  "https://example.com/image.png",
-	}
-
-	err := repo.InsertAndLinkAccount(context.Background(), &u, &user.Account{})
+	}, user.Account{})
 	require.NoError(t, err)
 
 	gotUser, err := repo.GetUserByUserID(context.Background(), string(u.UserID))
@@ -322,12 +312,12 @@ func TestGetUserByUserID_Error(t *testing.T) {
 
 	repo := repository.New(bunDB)
 
-	err := repo.InsertAndLinkAccount(context.Background(), &user.User{
+	_, err := repo.InsertAndLinkAccount(context.Background(), user.User{
 		UserID: "user-123456",
 		Name:   "John Doe",
 		Email:  "john@doe.com",
 		Image:  "https://example.com/image.png",
-	}, &user.Account{})
+	}, user.Account{})
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithCancel(context.Background())

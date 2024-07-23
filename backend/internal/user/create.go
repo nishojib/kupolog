@@ -11,7 +11,7 @@ import (
 
 func GetOrCreate(
 	ctx context.Context,
-	db userCreator,
+	db UserCreator,
 	email Email,
 	provider Provider,
 	accountID ID,
@@ -22,20 +22,16 @@ func GetOrCreate(
 	user, err := db.GetUserByProviderID(dbCtx, string(accountID))
 	if err != nil {
 		if errors.Is(err, repoErrors.ErrRecordNotFound) {
-			user = User{
+			user, err = db.InsertAndLinkAccount(dbCtx, User{
 				Name:   "Warrior of Light",
 				Email:  email,
 				Image:  "https://example.com/image.png",
 				UserID: ID(cuid2.Generate()),
-			}
-
-			account := Account{
+			}, Account{
 				Provider:          provider,
 				ProviderAccountID: accountID,
 				Email:             email,
-			}
-
-			err = db.InsertAndLinkAccount(dbCtx, &user, &account)
+			})
 			if err != nil {
 				return User{}, err
 			}
@@ -47,8 +43,8 @@ func GetOrCreate(
 	return user, nil
 }
 
-//go:generate minimock -i userCreator -s "_mock.go" -o "mocks"
-type userCreator interface {
+//go:generate mockery --with-expecter --name UserCreator
+type UserCreator interface {
 	GetUserByProviderID(ctx context.Context, providerAccountID string) (User, error)
-	InsertAndLinkAccount(ctx context.Context, user *User, account *Account) error
+	InsertAndLinkAccount(ctx context.Context, user User, account Account) (User, error)
 }
