@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/nishojib/ffxivdailies/internal/api"
-	"github.com/nishojib/ffxivdailies/internal/options"
 	"github.com/nishojib/ffxivdailies/internal/task"
 	"github.com/nishojib/ffxivdailies/internal/user"
 	"github.com/r3labs/sse/v2"
@@ -98,15 +97,6 @@ func (s *Server) ListenAndServe(port int) error {
 
 	slog.Info("stopped server", "addr", s.srv.Addr)
 	return nil
-}
-
-// Append applies the provided option.Options to the server.
-func (s *Server) Append(opts ...options.Option[Server]) *Server {
-	for _, opt := range opts {
-		opt.Apply(s)
-	}
-
-	return s
 }
 
 type Repository interface {

@@ -51,6 +51,7 @@ func TestProblem(t *testing.T) {
 		`{"status":202, "title":"Accepted", "type":"https://tools.ietf.org/html/rfc9110#section-15.3.3"}`,
 	)
 
+	assert.Equal(t, *p, p.Problem())
 }
 
 func TestProblemHTTP(t *testing.T) {
@@ -115,7 +116,6 @@ func TestErrors(t *testing.T) {
 	knownProblem := problem.New(problem.WithStatus(404), problem.WithTitle("not found"))
 
 	responseFromExternalService := http.Response{
-		StatusCode: 404,
 		Header: map[string][]string{
 			"Content-Type": {problem.ContentTypeJson},
 		},
