@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/nishojib/ffxivdailies/internal/api"
-	"github.com/nishojib/ffxivdailies/internal/options"
 	"github.com/nishojib/ffxivdailies/internal/task"
 	"github.com/nishojib/ffxivdailies/internal/user"
 	"github.com/r3labs/sse/v2"
@@ -21,12 +20,14 @@ import (
 
 // Server represents an HTTP server.
 type Server struct {
-	srv      *http.Server
-	db       Repository
-	sse      *sse.Server
-	provider Provider
-	clients  map[chan string]bool
-	wg       sync.WaitGroup
+	srv       *http.Server
+	db        Repository
+	userModel UserModel
+	authModel AuthModel
+	sse       *sse.Server
+	provider  Provider
+	clients   map[chan string]bool
+	wg        sync.WaitGroup
 
 	cfg Config
 }
@@ -39,13 +40,22 @@ type Config struct {
 }
 
 // New creates a new server with the provided option.Options.
-func New(db Repository, provider Provider, sse *sse.Server, cfg Config) *Server {
+func New(
+	db Repository,
+	userModel UserModel,
+	authModel AuthModel,
+	provider Provider,
+	sse *sse.Server,
+	cfg Config,
+) *Server {
 	s := &Server{
-		db:       db,
-		provider: provider,
-		sse:      sse,
-		cfg:      cfg,
-		clients:  make(map[chan string]bool),
+		db:        db,
+		userModel: userModel,
+		authModel: authModel,
+		provider:  provider,
+		sse:       sse,
+		cfg:       cfg,
+		clients:   make(map[chan string]bool),
 	}
 
 	s.srv = &http.Server{
@@ -100,15 +110,9 @@ func (s *Server) ListenAndServe(port int) error {
 	return nil
 }
 
-// Append applies the provided option.Options to the server.
-func (s *Server) Append(opts ...options.Option[Server]) *Server {
-	for _, opt := range opts {
-		opt.Apply(s)
-	}
+// Repository is an interface that represents the db operations for the server.
 
-	return s
-}
-
+//go:generate mockery --with-expecter --name Repository
 type Repository interface {
 	GetUserByProviderID(ctx context.Context, providerAccountID string) (user.User, error)
 	InsertAndLinkAccount(ctx context.Context, u *user.User, account *user.Account) error
@@ -123,6 +127,35 @@ type Repository interface {
 	GetTasksForUser(ctx context.Context, userID string) ([]task.Task, error)
 }
 
+// Provider is an interface that represents the auth provider.
+
+//go:generate mockery --with-expecter --name Provider
 type Provider interface {
 	Validate(provider string, token string) (string, bool, error)
+}
+
+// UserModel is an interface that represents the user model.
+
+//go:generate mockery --with-expecter --name UserModel
+type UserModel interface {
+	GetOrCreate(
+		ctx context.Context,
+		email user.Email,
+		provider user.Provider,
+		accountID user.ID,
+	) (user.User, error)
+}
+
+// AuthModel is an interface that represents the auth model.
+
+//go:generate mockery --with-expecter --name AuthModel
+type AuthModel interface {
+	CreateTokens(
+		ctx context.Context,
+		userID string,
+		authSecret string,
+	) (string, string, error)
+	RefreshToken(token, secret string) (string, error)
+	GetBearerToken(headers http.Header) (string, error)
+	IsTokenRevoked(ctx context.Context, token string) (bool, error)
 }

@@ -46,3 +46,13 @@ func (u *User) Validate(v *validator.Validator) {
 
 	v.Check(validator.Url(string(u.Image)), "image", "must be a valid url")
 }
+
+// UserModel is a struct that represents the user model.
+type UserModel struct {
+	creator UserCreator
+}
+
+// NewModel creates a new UserModel.
+func NewModel(creator UserCreator) *UserModel {
+	return &UserModel{creator}
+}

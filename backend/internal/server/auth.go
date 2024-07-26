@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/nishojib/ffxivdailies/internal/api"
-	"github.com/nishojib/ffxivdailies/internal/auth"
 	"github.com/nishojib/ffxivdailies/internal/user"
 )
 
@@ -88,9 +87,8 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := user.GetOrCreate(
+	u, err := s.userModel.GetOrCreate(
 		r.Context(),
-		s.db,
 		user.Email(email),
 		user.Provider(a.Provider),
 		user.ID(a.ProviderAccountID),
@@ -100,34 +98,16 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenExpiresIn := time.Hour * 1
-	accessToken, err := auth.New(
-		auth.TokenTypeAccess,
+	accessToken, refreshToken, err := s.authModel.CreateTokens(
+		r.Context(),
 		string(u.UserID),
 		s.cfg.AuthSecret,
-		tokenExpiresIn,
 	)
 	if err != nil {
 		api.ServerErrorResponse(
 			w,
 			r,
 			fmt.Errorf("error creating access token %s", err.Error()),
-		)
-		return
-	}
-
-	refreshTokenExpiresIn := time.Hour * 24 * 60
-	refreshToken, err := auth.New(
-		auth.TokenTypeRefresh,
-		string(u.UserID),
-		s.cfg.AuthSecret,
-		refreshTokenExpiresIn,
-	)
-	if err != nil {
-		api.ServerErrorResponse(
-			w,
-			r,
-			fmt.Errorf("error creating refresh token %s", err.Error()),
 		)
 		return
 	}
@@ -175,16 +155,13 @@ type RefreshTokenResponse struct {
 //	@Failure		500				{object}	object{detail=string,status=int,title=string,type=string}
 //	@Router			/auth/refresh [post]
 func (s *Server) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
-	refreshToken, err := auth.GetBearerToken(r.Header)
+	refreshToken, err := s.authModel.GetBearerToken(r.Header)
 	if err != nil {
 		api.BadRequestResponse(w, r, errors.New("couldn't find JWT"))
 		return
 	}
 
-	dbCtx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
-	defer cancel()
-
-	isRevoked, err := s.db.IsTokenRevoked(dbCtx, refreshToken)
+	isRevoked, err := s.authModel.IsTokenRevoked(r.Context(), refreshToken)
 	if err != nil {
 		api.ServerErrorResponse(w, r, errors.New("couldn't check session"))
 		return
@@ -194,7 +171,7 @@ func (s *Server) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, err := auth.RefreshToken(refreshToken, s.cfg.AuthSecret)
+	accessToken, err := s.authModel.RefreshToken(refreshToken, s.cfg.AuthSecret)
 	if err != nil {
 		api.InvalidAccessTokenResponse(w, r)
 		return
@@ -226,7 +203,7 @@ func (s *Server) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 //	@Failure		500	{object}	object{detail=string,status=int,title=string,type=string}
 //	@Router			/auth/revoke [post]
 func (s *Server) RevokeTokenHandler(w http.ResponseWriter, r *http.Request) {
-	refreshToken, err := auth.GetBearerToken(r.Header)
+	refreshToken, err := s.authModel.GetBearerToken(r.Header)
 	if err != nil {
 		api.BadRequestResponse(w, r, fmt.Errorf("couldn't find JWT, %s", err.Error()))
 		return

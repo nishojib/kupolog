@@ -13,10 +13,12 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/nishojib/ffxivdailies/docs"
 	"github.com/nishojib/ffxivdailies/internal/api"
+	"github.com/nishojib/ffxivdailies/internal/auth"
 	"github.com/nishojib/ffxivdailies/internal/cronjob"
 	"github.com/nishojib/ffxivdailies/internal/provider"
 	"github.com/nishojib/ffxivdailies/internal/repository"
 	"github.com/nishojib/ffxivdailies/internal/server"
+	"github.com/nishojib/ffxivdailies/internal/user"
 	"github.com/nishojib/ffxivdailies/internal/vcs"
 	"github.com/r3labs/sse/v2"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
@@ -115,6 +117,8 @@ func main() {
 
 	s := server.New(
 		repo,
+		user.NewModel(repo),
+		auth.NewModel(repo),
 		provider.New(),
 		sseServer,
 		server.Config{

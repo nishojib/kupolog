@@ -13,21 +13,21 @@ import (
 
 func (r *Repository) InsertAndLinkAccount(
 	ctx context.Context,
-	user *user.User,
-	account *user.Account,
+	u *user.User,
+	a *user.Account,
 ) error {
 	err := r.db.RunInTx(
 		ctx,
 		&sql.TxOptions{},
-		func(ctx context.Context, tx bun.Tx) error {
-			_, err := tx.NewInsert().Model(user).Exec(ctx)
+		func(innerCtx context.Context, tx bun.Tx) error {
+			_, err := tx.NewInsert().Model(u).Exec(innerCtx)
 			if err != nil {
 				// If the error is a unique constraint error, try to fetch the user by email
 				if strings.Contains(
 					err.Error(),
-					"SQLite error: UNIQUE constraint failed: users.email",
+					"UNIQUE constraint failed: users.email",
 				) {
-					err = tx.NewSelect().Model(user).Where("email = ?", user.Email).Scan(ctx)
+					err = tx.NewSelect().Model(u).Where("email = ?", u.Email).Scan(innerCtx)
 					if err != nil {
 						return err
 					}
@@ -36,9 +36,9 @@ func (r *Repository) InsertAndLinkAccount(
 				}
 			}
 
-			account.UserID = user.ID
+			a.UserID = u.ID
 
-			_, err = tx.NewInsert().Model(account).Exec(ctx)
+			_, err = tx.NewInsert().Model(a).Exec(innerCtx)
 			if err != nil {
 				return err
 			}
@@ -80,19 +80,14 @@ func (r *Repository) GetUserByProviderID(
 func (r *Repository) UpdateUser(ctx context.Context, u *user.User) error {
 	result, err := r.db.NewUpdate().
 		Model(u).
-		Set("title = ?", u.Name).
-		Set("author = ?", u.Email).
+		Set("name = ?", u.Name).
+		Set("email = ?", u.Email).
 		Set("version = ?", u.Version+1).
 		Where("id = ?", u.ID).
 		Where("version = ?", u.Version).
 		Exec(ctx)
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return repoErrors.ErrEditConflict
-		default:
-			return err
-		}
+		return err
 	}
 
 	rowsAffected, err := result.RowsAffected()
