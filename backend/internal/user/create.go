@@ -9,9 +9,9 @@ import (
 	"github.com/nrednav/cuid2"
 )
 
-func GetOrCreate(
+// GetOrCreate returns a user if exists or creates a new one.
+func (um *UserModel) GetOrCreate(
 	ctx context.Context,
-	db UserCreator,
 	email Email,
 	provider Provider,
 	accountID ID,
@@ -19,15 +19,17 @@ func GetOrCreate(
 	dbCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
-	user, err := db.GetUserByProviderID(dbCtx, string(accountID))
+	user, err := um.creator.GetUserByProviderID(dbCtx, string(accountID))
 	if err != nil {
 		if errors.Is(err, repoErrors.ErrRecordNotFound) {
-			user, err = db.InsertAndLinkAccount(dbCtx, User{
+			user = User{
 				Name:   "Warrior of Light",
 				Email:  email,
 				Image:  "https://example.com/image.png",
 				UserID: ID(cuid2.Generate()),
-			}, Account{
+			}
+
+			err = um.creator.InsertAndLinkAccount(dbCtx, &user, &Account{
 				Provider:          provider,
 				ProviderAccountID: accountID,
 				Email:             email,
@@ -46,5 +48,5 @@ func GetOrCreate(
 //go:generate mockery --with-expecter --name UserCreator
 type UserCreator interface {
 	GetUserByProviderID(ctx context.Context, providerAccountID string) (User, error)
-	InsertAndLinkAccount(ctx context.Context, user User, account Account) (User, error)
+	InsertAndLinkAccount(ctx context.Context, user *User, account *Account) error
 }

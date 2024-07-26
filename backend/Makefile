@@ -8,7 +8,6 @@ endif
 # ==================================================================================== #
 
 ## audit: tidy and vendor dependencies and format, vet and test all code
-## TODO: https://github.com/dominikh/go-tools/issues/429
 .PHONY: audit
 audit: vendor
 	@echo 'Formatting code...'

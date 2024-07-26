@@ -34,7 +34,7 @@ func TestGetOrCreate(t *testing.T) {
 		Version:           1,
 		CreatedAt:         time.Now(),
 		DeletedAt:         time.Time{},
-		UserID:            newUser.ID,
+		UserID:            1,
 	}
 
 	dbError := errors.New("error")
@@ -42,51 +42,61 @@ func TestGetOrCreate(t *testing.T) {
 	tests := map[string]struct {
 		user        user.User
 		account     user.Account
-		db          func(creator *mocks.UserCreator, u user.User)
+		db          func(creator *mocks.UserCreator, u *user.User)
 		expectedErr error
 	}{
 		"create user when nothing exists": {
 			user:    newUser,
 			account: newAccount,
-			db: func(creator *mocks.UserCreator, u user.User) {
+			db: func(creator *mocks.UserCreator, u *user.User) {
 				creator.EXPECT().
 					GetUserByProviderID(mock.Anything, mock.AnythingOfType("string")).
 					Return(user.User{}, repoErrors.ErrRecordNotFound)
 
 				creator.EXPECT().
-					InsertAndLinkAccount(mock.Anything, mock.AnythingOfType("user.User"), mock.AnythingOfType("user.Account")).
-					Return(u, nil)
+					InsertAndLinkAccount(mock.Anything, mock.AnythingOfType("*user.User"), mock.AnythingOfType("*user.Account")).
+					RunAndReturn(func(_ context.Context, usr *user.User, _ *user.Account) error {
+						usr.ID = u.ID
+						usr.UserID = u.UserID
+						usr.Name = u.Name
+						usr.Email = u.Email
+						usr.Image = u.Image
+						usr.CreatedAt = u.CreatedAt
+						usr.DeletedAt = u.DeletedAt
+						usr.Version = u.Version
+						return nil
+					})
 			},
 			expectedErr: nil,
 		},
 		"error when creating user": {
 			user:    newUser,
 			account: newAccount,
-			db: func(creator *mocks.UserCreator, u user.User) {
+			db: func(creator *mocks.UserCreator, _ *user.User) {
 				creator.EXPECT().
 					GetUserByProviderID(mock.Anything, mock.AnythingOfType("string")).
 					Return(user.User{}, repoErrors.ErrRecordNotFound)
 
 				creator.EXPECT().
-					InsertAndLinkAccount(mock.Anything, mock.AnythingOfType("user.User"), mock.AnythingOfType("user.Account")).
-					Return(user.User{}, dbError)
+					InsertAndLinkAccount(mock.Anything, mock.AnythingOfType("*user.User"), mock.AnythingOfType("*user.Account")).
+					Return(dbError)
 			},
 			expectedErr: dbError,
 		},
 		"getting existing user": {
 			user:    newUser,
 			account: newAccount,
-			db: func(creator *mocks.UserCreator, u user.User) {
+			db: func(creator *mocks.UserCreator, u *user.User) {
 				creator.EXPECT().
 					GetUserByProviderID(mock.Anything, mock.AnythingOfType("string")).
-					Return(u, nil)
+					Return(*u, nil)
 			},
 			expectedErr: nil,
 		},
 		"error getting existing user": {
 			user:    newUser,
 			account: newAccount,
-			db: func(creator *mocks.UserCreator, u user.User) {
+			db: func(creator *mocks.UserCreator, u *user.User) {
 				creator.EXPECT().
 					GetUserByProviderID(mock.Anything, mock.AnythingOfType("string")).
 					Return(user.User{}, dbError)
@@ -99,11 +109,12 @@ func TestGetOrCreate(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockUserCreator := mocks.NewUserCreator(t)
 
-			tc.db(mockUserCreator, tc.user)
+			tc.db(mockUserCreator, &tc.user)
 
-			user, err := user.GetOrCreate(
+			userModel := user.NewModel(mockUserCreator)
+
+			got, err := userModel.GetOrCreate(
 				context.Background(),
-				mockUserCreator,
 				tc.user.Email,
 				tc.account.Provider,
 				tc.account.ProviderAccountID,
@@ -111,7 +122,7 @@ func TestGetOrCreate(t *testing.T) {
 			require.ErrorIs(t, err, tc.expectedErr)
 
 			if tc.expectedErr == nil {
-				assert.Equal(t, tc.user, user)
+				assert.Equal(t, tc.user, got)
 			}
 
 		})

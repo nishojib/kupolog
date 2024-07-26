@@ -11,14 +11,14 @@ import (
 
 func (s *Server) withAuthentication(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authToken, err := auth.GetBearerToken(r.Header)
+		authToken, err := s.authModel.GetBearerToken(r.Header)
 		if err != nil {
 			slog.Error("failed to get bearer token", "error", err)
 			api.AuthenticationRequiredResponse(w, r)
 			return
 		}
 
-		userID, err := auth.Validate(authToken, s.cfg.AuthSecret)
+		userID, err := auth.ValidateToken(authToken, s.cfg.AuthSecret)
 		if err != nil {
 			slog.Error("failed to validate token", "error", err)
 			api.InvalidAccessTokenResponse(w, r)

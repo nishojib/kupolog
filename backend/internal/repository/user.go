@@ -13,21 +13,21 @@ import (
 
 func (r *Repository) InsertAndLinkAccount(
 	ctx context.Context,
-	u user.User,
-	a user.Account,
-) (user.User, error) {
+	u *user.User,
+	a *user.Account,
+) error {
 	err := r.db.RunInTx(
 		ctx,
 		&sql.TxOptions{},
 		func(innerCtx context.Context, tx bun.Tx) error {
-			_, err := tx.NewInsert().Model(&u).Exec(innerCtx)
+			_, err := tx.NewInsert().Model(u).Exec(innerCtx)
 			if err != nil {
 				// If the error is a unique constraint error, try to fetch the user by email
 				if strings.Contains(
 					err.Error(),
 					"UNIQUE constraint failed: users.email",
 				) {
-					err = tx.NewSelect().Model(&u).Where("email = ?", u.Email).Scan(innerCtx)
+					err = tx.NewSelect().Model(u).Where("email = ?", u.Email).Scan(innerCtx)
 					if err != nil {
 						return err
 					}
@@ -38,7 +38,7 @@ func (r *Repository) InsertAndLinkAccount(
 
 			a.UserID = u.ID
 
-			_, err = tx.NewInsert().Model(&a).Exec(innerCtx)
+			_, err = tx.NewInsert().Model(a).Exec(innerCtx)
 			if err != nil {
 				return err
 			}
@@ -48,10 +48,10 @@ func (r *Repository) InsertAndLinkAccount(
 	)
 
 	if err != nil {
-		return user.User{}, err
+		return err
 	}
 
-	return u, nil
+	return nil
 }
 
 func (r *Repository) GetUserByProviderID(

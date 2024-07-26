@@ -80,31 +80,21 @@ func (_c *UserCreator_GetUserByProviderID_Call) RunAndReturn(run func(context.Co
 }
 
 // InsertAndLinkAccount provides a mock function with given fields: ctx, _a1, account
-func (_m *UserCreator) InsertAndLinkAccount(ctx context.Context, _a1 user.User, account user.Account) (user.User, error) {
+func (_m *UserCreator) InsertAndLinkAccount(ctx context.Context, _a1 *user.User, account *user.Account) error {
 	ret := _m.Called(ctx, _a1, account)
 
 	if len(ret) == 0 {
 		panic("no return value specified for InsertAndLinkAccount")
 	}
 
-	var r0 user.User
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, user.User, user.Account) (user.User, error)); ok {
-		return rf(ctx, _a1, account)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, user.User, user.Account) user.User); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *user.User, *user.Account) error); ok {
 		r0 = rf(ctx, _a1, account)
 	} else {
-		r0 = ret.Get(0).(user.User)
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, user.User, user.Account) error); ok {
-		r1 = rf(ctx, _a1, account)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // UserCreator_InsertAndLinkAccount_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InsertAndLinkAccount'
@@ -114,25 +104,25 @@ type UserCreator_InsertAndLinkAccount_Call struct {
 
 // InsertAndLinkAccount is a helper method to define mock.On call
 //   - ctx context.Context
-//   - _a1 user.User
-//   - account user.Account
+//   - _a1 *user.User
+//   - account *user.Account
 func (_e *UserCreator_Expecter) InsertAndLinkAccount(ctx interface{}, _a1 interface{}, account interface{}) *UserCreator_InsertAndLinkAccount_Call {
 	return &UserCreator_InsertAndLinkAccount_Call{Call: _e.mock.On("InsertAndLinkAccount", ctx, _a1, account)}
 }
 
-func (_c *UserCreator_InsertAndLinkAccount_Call) Run(run func(ctx context.Context, _a1 user.User, account user.Account)) *UserCreator_InsertAndLinkAccount_Call {
+func (_c *UserCreator_InsertAndLinkAccount_Call) Run(run func(ctx context.Context, _a1 *user.User, account *user.Account)) *UserCreator_InsertAndLinkAccount_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(user.User), args[2].(user.Account))
+		run(args[0].(context.Context), args[1].(*user.User), args[2].(*user.Account))
 	})
 	return _c
 }
 
-func (_c *UserCreator_InsertAndLinkAccount_Call) Return(_a0 user.User, _a1 error) *UserCreator_InsertAndLinkAccount_Call {
-	_c.Call.Return(_a0, _a1)
+func (_c *UserCreator_InsertAndLinkAccount_Call) Return(_a0 error) *UserCreator_InsertAndLinkAccount_Call {
+	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *UserCreator_InsertAndLinkAccount_Call) RunAndReturn(run func(context.Context, user.User, user.Account) (user.User, error)) *UserCreator_InsertAndLinkAccount_Call {
+func (_c *UserCreator_InsertAndLinkAccount_Call) RunAndReturn(run func(context.Context, *user.User, *user.Account) error) *UserCreator_InsertAndLinkAccount_Call {
 	_c.Call.Return(run)
 	return _c
 }
