@@ -25,3 +25,5 @@ jobs:
       - name: Run cron app
         run: ./bin/linux/cron -env production -kind weekly
         working-directory: ./backend
+        env:
+          DB_DSN: ${{ secrets.DB_DSN }}
