@@ -1,8 +1,9 @@
 name: Weekly cron
 on:
+  workflow_dispatch:
   schedule:
     - cron: '2 * * * *'
-  workflow_dispatch:
+    - cron: '5 * * * *'
 
 jobs:
   style:
@@ -22,8 +23,16 @@ jobs:
         run: GOOS=linux GOARCH=amd64 go build -o ./bin/linux/cron ./cmd/crons
         working-directory: ./backend
 
-      - name: Run cron app
+      - name: Run cron app for weekly
         run: ./bin/linux/cron -env production -kind weekly
+        if: github.event.schedule == '2 * * * *'
+        working-directory: ./backend
+        env:
+          DB_DSN: ${{ secrets.DB_DSN }}
+
+      - name: Run cron app for daily
+        run: ./bin/linux/cron -env production -kind daily
+        if: github.event.schedule == '5 * * * *'
         working-directory: ./backend
         env:
           DB_DSN: ${{ secrets.DB_DSN }}
