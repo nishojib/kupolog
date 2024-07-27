@@ -44,6 +44,11 @@ build/api:
 	@echo 'Building cmd/api...'
 	go build -ldflags='-s -w' -o=/bin/api ./cmd/api
 
+.PHONY: build/cron
+build/cron:
+	@echo 'Building cmd/cron...'
+	go build -ldflags='-s -w' -o=/bin/cron ./cmd/crons
+
 # ==================================================================================== #
 # RUN
 # ==================================================================================== #

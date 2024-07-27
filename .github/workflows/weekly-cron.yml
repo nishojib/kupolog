@@ -20,6 +20,8 @@ jobs:
 
       - name: Build go app for linux
         run: GOOS=linux GOARCH=amd64 go build -o ./bin/linux/cron ./cmd/crons
+        working-directory: ./backend
 
       - name: Run cron app
         run: ./bin/linux/cron -env production -kind weekly
+        working-directory: ./backend
