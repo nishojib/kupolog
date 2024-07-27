@@ -1,0 +1,24 @@
+name: Daily cron
+on:
+  schedule:
+    - cron: '2 * * * 0'
+
+jobs:
+  style:
+    name: Cron
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Build go app for linux
+        run: GOOS=linux GOARCH=amd64 go build -o ./bin/linux/cron ./cmd/crons
+
+      - name: Run cron app
+        run: ./bin/linux/cron -env production -kind daily
