@@ -2,8 +2,8 @@ name: Weekly cron
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/15 * * * *'
-    - cron: '*/18 * * * *'
+    - cron: '0 8 * * 2'
+    - cron: '0 15 * * *'
 
 jobs:
   style:
@@ -25,14 +25,14 @@ jobs:
 
       - name: Run cron app for weekly
         run: ./bin/linux/cron -env production -kind weekly
-        if: github.event.schedule == '*/15 * * * *'
+        if: github.event.schedule == '0 8 * * 2'
         working-directory: ./backend
         env:
           DB_DSN: ${{ secrets.DB_DSN }}
 
       - name: Run cron app for daily
         run: ./bin/linux/cron -env production -kind daily
-        if: github.event.schedule == '*/18 * * * *'
+        if: github.event.schedule == '0 15 * * *'
         working-directory: ./backend
         env:
           DB_DSN: ${{ secrets.DB_DSN }}
