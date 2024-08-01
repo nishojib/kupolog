@@ -2,7 +2,10 @@
 
 import { TaskCard } from '@/app/(app)/tasks/task';
 import { DailyTimer, WeeklyTimer } from '@/app/(app)/tasks/timer';
-import { ServerSharedTaskResponse } from '@/app/api/kupolog';
+import {
+  ServerSharedTaskResponse,
+  ServerTaskResponse,
+} from '@/app/api/kupolog';
 
 import { useSSEEvents } from './use-sse-events';
 
@@ -27,7 +30,7 @@ export function Tasks({
           </p>
         </div>
         <ul className="space-y-4">
-          {tasks?.weeklies?.map((task) => (
+          {tasks?.weeklies?.map((task: ServerTaskResponse) => (
             <TaskCard
               key={task.taskID}
               task={task}
