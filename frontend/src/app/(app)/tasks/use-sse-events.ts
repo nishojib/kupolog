@@ -6,7 +6,6 @@ export const useSSEEvents = (url: string) => {
   const router = useRouter();
 
   const listenToSSEUpdates = useCallback(() => {
-    console.log('listening to sse updates');
     const eventSource = new EventSource(url, {
       withCredentials: true,
     });
