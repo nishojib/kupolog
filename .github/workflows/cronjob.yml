@@ -1,4 +1,4 @@
-name: Weekly cron
+name: Task Reset Cron
 on:
   workflow_dispatch:
   schedule:

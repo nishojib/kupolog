@@ -101,7 +101,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	repo := repository.New(db)
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		slog.Error("failed to parse port", "error", err)
+		os.Exit(1)
+	}
 
 	sseServer := sse.New()
 	defer sseServer.RemoveStream("messages")
@@ -109,12 +113,11 @@ func main() {
 
 	sseServer.CreateStream("messages")
 
-	c := cronjob.New(repo, sseServer)
+	c := cronjob.New(sseServer)
 	c.Start()
 	defer c.Stop()
 
-	port, err := strconv.Atoi(os.Getenv("PORT"))
-
+	repo := repository.New(db)
 	s := server.New(
 		repo,
 		user.NewModel(repo),
