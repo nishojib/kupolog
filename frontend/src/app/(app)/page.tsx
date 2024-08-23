@@ -11,6 +11,7 @@ export default async function Page() {
         <h1 className="text-primary text-4xl font-bold">
           Hello, {session?.user?.name ?? 'Kupo'}!
         </h1>
+        <p>Welcome!!</p>
         <p className="mt-2 flex items-center gap-1 capitalize">
           <span>status:</span>
           <span className="text-xs">🟢</span>
